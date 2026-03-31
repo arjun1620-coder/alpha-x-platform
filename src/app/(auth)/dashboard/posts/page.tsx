@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { ArrowLeft, Users, Activity, PlusSquare, Image as ImageIcon, Trash2, Send, X } from "lucide-react";
+import { ArrowLeft, Users, Activity, PlusSquare, Image as ImageIcon, Trash2, Send, X, Network } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 // Mock Data for the prototype
@@ -96,6 +96,10 @@ export default function PostsDashboard() {
             <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
               <Users className="w-5 h-5" />
               Applications
+            </Link>
+            <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+              <Network className="w-5 h-5" />
+              Teams
             </Link>
             <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
               <Activity className="w-5 h-5" />
