@@ -3,20 +3,31 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Lock, Fingerprint, ShieldAlert, KeyRound, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsAuthenticating(true);
+    setErrorMsg("");
     
-    // Simulate authentication process & redirect to dashboard
-    setTimeout(() => {
+    // Authenticate securely with Supabase
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      setErrorMsg(error.message);
+      setIsAuthenticating(false);
+    } else {
       window.location.href = "/dashboard/applications";
-    }, 1500);
+    }
   };
 
   return (
@@ -78,6 +89,12 @@ export default function LoginPage() {
                 />
               </div>
             </div>
+
+            {errorMsg && (
+              <div className="text-red-400 font-medium text-sm text-center -mb-2 mt-4 bg-red-400/10 py-3 px-4 rounded-xl border border-red-400/20 animate-pulse">
+                Access Denied: {errorMsg}
+              </div>
+            )}
 
             <div className="pt-4">
               <button 

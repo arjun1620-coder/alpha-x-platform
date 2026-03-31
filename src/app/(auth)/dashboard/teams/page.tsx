@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Users, Activity, Network, Shield, Plus, ChevronRight, Cpu, Target, CheckCircle2, Circle } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 const MOCK_TEAMS = [
   {
@@ -106,10 +107,13 @@ export default function TeamsDashboard() {
             </Link>
           </nav>
 
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+          <button 
+            onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }}
+            className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left"
+          >
             <ArrowLeft className="w-5 h-5" />
             Sign Out
-          </Link>
+          </button>
         </div>
 
         {/* Main Content Area */}

@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import Link from "next/link";
 import { ArrowLeft, Users, Activity, PlusSquare, Image as ImageIcon, Trash2, Send, X } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 // Mock Data for the prototype
 const MOCK_POSTS = [
@@ -102,10 +103,13 @@ export default function PostsDashboard() {
             </Link>
           </nav>
 
-          <Link href="/" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+          <button 
+            onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }}
+            className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left"
+          >
             <ArrowLeft className="w-5 h-5" />
             Sign Out
-          </Link>
+          </button>
         </div>
 
         {/* Main Content Area */}
