@@ -19,6 +19,7 @@ export default function TeamsDashboard() {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchData = async () => {
@@ -273,11 +274,11 @@ export default function TeamsDashboard() {
                           <div key={member.id} className="bg-[#030712] border border-white/5 rounded-xl p-4 flex items-center justify-between group hover:border-white/10 transition-colors">
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center font-bold text-emerald-400 text-xs shadow-inner uppercase">
-                                {member.full_name.substring(0,2)}
+                                {member.full_name?.substring(0,2) || "??"}
                               </div>
                               <div>
-                                <h4 className="font-bold text-sm text-white">{member.full_name}</h4>
-                                <p className="text-xs text-teal-400">{member.skills?.slice(0,2).join(", ")}</p>
+                                <h4 className="font-bold text-sm text-white">{member.full_name || "Operative"}</h4>
+                                <p className="text-xs text-teal-400">{(member.skills || []).slice(0,2).join(", ")}</p>
                               </div>
                             </div>
                             <button onClick={() => handleRemoveMember(member.id)} className="text-gray-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 p-2">
@@ -304,7 +305,7 @@ export default function TeamsDashboard() {
                                 key={member.id} onClick={() => handleAssignMember(member.id)}
                                 className="text-xs font-semibold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 border border-white/10 px-3 py-1.5 rounded-full transition-all flex items-center gap-1 active:scale-95"
                               >
-                                <Plus className="w-3 h-3" /> {member.full_name.split(' ')[0]}
+                                <Plus className="w-3 h-3" /> {member.full_name?.split(' ')[0] || "Operative"}
                               </button>
                             ))}
                           </div>
