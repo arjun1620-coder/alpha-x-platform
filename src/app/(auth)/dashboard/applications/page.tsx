@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function ApplicationsDashboard() {
@@ -78,6 +78,10 @@ export default function ApplicationsDashboard() {
             <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
               <Network className="w-5 h-5" />
               Teams
+            </Link>
+            <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+              <Calendar className="w-5 h-5" />
+              Announcements
             </Link>
             <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
               <Activity className="w-5 h-5" />

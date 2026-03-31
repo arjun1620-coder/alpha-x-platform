@@ -1,7 +1,33 @@
 import Link from "next/link";
-import { ArrowRight, Cpu, Shield, Zap } from "lucide-react";
+import { ArrowRight, Cpu, Shield, Zap, Calendar, Trophy, AlertTriangle, Megaphone } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
-export default function Home() {
+export const revalidate = 0;
+
+export default async function Home() {
+  const { data: events } = await supabase
+    .from('events')
+    .select('*')
+    .order('event_date', { ascending: true })
+    .limit(3);
+
+  const getCategoryIcon = (cat: string, className: string) => {
+    switch (cat) {
+      case 'competition': return <Trophy className={className} />;
+      case 'deadline': return <AlertTriangle className={className} />;
+      case 'event': return <Calendar className={className} />;
+      default: return <Megaphone className={className} />;
+    }
+  };
+
+  const getCategoryColor = (cat: string) => {
+    switch(cat) {
+      case 'competition': return 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10';
+      case 'deadline': return 'text-red-400 border-red-500/30 bg-red-500/10';
+      case 'event': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
+      default: return 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+    }
+  };
   return (
     <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative">
       {/* Background gradients */}
@@ -88,6 +114,42 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Operations & Deadlines Ledger */}
+        {events && events.length > 0 && (
+          <section className="mt-32 max-w-4xl mx-auto pb-20">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-bold tracking-widest uppercase mb-4">
+                <Calendar className="w-4 h-4" /> Live Radar
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-4">
+                Operations & Events
+              </h2>
+            </div>
+            
+            <div className="space-y-4">
+              {events.map((ev: any) => (
+                <div key={ev.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl flex flex-col md:flex-row gap-6 items-start group hover:border-emerald-500/30 transition-all duration-300">
+                  <div className={`p-4 rounded-2xl border ${getCategoryColor(ev.category)} flex-shrink-0 flex items-center justify-center`}>
+                    {getCategoryIcon(ev.category, "w-8 h-8")}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded border ${getCategoryColor(ev.category)}`}>
+                        {ev.category}
+                      </span>
+                      <span className="text-gray-400 font-mono text-sm">
+                        {new Date(ev.event_date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+                      </span>
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{ev.title}</h3>
+                    <p className="text-gray-400 leading-relaxed max-w-2xl">{ev.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
       </main>
     </div>
