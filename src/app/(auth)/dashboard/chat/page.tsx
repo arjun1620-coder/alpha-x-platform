@@ -126,8 +126,8 @@ export default function ChatPage() {
           <div className="md:hidden h-20 flex-shrink-0" />
 
           {/* Chat Header */}
-          <div className="p-6 border-b border-white/5 bg-[#080d1a]/50 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
+          <div className="p-6 border-b border-white/5 bg-[#080d1a]/50 backdrop-blur-md flex flex-col lg:flex-row lg:items-center gap-6">
+            <div className="flex-1">
               <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
                 <MessageSquare className="w-6 h-6 text-indigo-500" />
                 Team Transmissions
@@ -139,7 +139,7 @@ export default function ChatPage() {
             </div>
 
             {userRole === 'admin' && teams.length > 0 && (
-              <div className="flex items-center gap-3 bg-[#030712] border border-white/10 rounded-xl px-4 py-2">
+              <div className="flex items-center gap-3 bg-[#030712] border border-white/10 rounded-xl px-4 py-2 self-start lg:self-center mr-16 lg:mr-24">
                 <Hash className="w-4 h-4 text-gray-500" />
                 <select 
                   aria-label="Select Team Channel"
