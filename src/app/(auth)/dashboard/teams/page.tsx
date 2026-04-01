@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, Users, Activity, PlusSquare, Network, Shield, Plus, ChevronRight, CheckCircle2, Circle, Loader2, Trash2, Link2, X, Target, Calendar } from "lucide-react";
+import { ArrowLeft, Users, Activity, Network, Shield, Plus, ChevronRight, CheckCircle2, Circle, Loader2, Trash2, X, Target, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function TeamsDashboard() {
@@ -10,6 +10,7 @@ export default function TeamsDashboard() {
   const [availableMembers, setAvailableMembers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [userRole, setUserRole] = useState<string | null>(null);
+  const [memberData, setMemberData] = useState<any>(null);
   
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [selectedNewMember, setSelectedNewMember] = useState("");
@@ -20,15 +21,20 @@ export default function TeamsDashboard() {
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
 
   useEffect(() => {
-    setUserRole(localStorage.getItem('userRole'));
+    const role = localStorage.getItem('userRole');
+    setUserRole(role);
+    const storedMember = localStorage.getItem('memberData');
+    if (storedMember) {
+      try { setMemberData(JSON.parse(storedMember)); } catch(e) {}
+    }
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchData = async () => {
     setIsLoading(true);
-    // 1. Fetch Teams with their nested tasks and members
-    const { data: dbTeams, error: teamsError } = await supabase
+    // Fetch Teams with their nested tasks and members
+    const { data: dbTeams } = await supabase
       .from('teams')
       .select(`
         *,
@@ -37,8 +43,8 @@ export default function TeamsDashboard() {
       `)
       .order('created_at', { ascending: false });
 
-    // 2. Fetch all approved applications (so we can add unassigned or move assigned members)
-    const { data: dbApproved, error: availError } = await supabase
+    // Fetch all approved applications
+    const { data: dbApproved } = await supabase
       .from('applications')
       .select('*')
       .eq('status', 'approved');
@@ -46,20 +52,24 @@ export default function TeamsDashboard() {
     if (dbTeams) setTeams(dbTeams);
     if (dbApproved) setAvailableMembers(dbApproved);
     
-    // Automatically select the first team if none selected
-    if (dbTeams && dbTeams.length > 0 && !selectedTeamId) {
-      setSelectedTeamId(dbTeams[0].id);
-    }
-
     setIsLoading(false);
   };
+
+  // For members: auto-select their team
+  useEffect(() => {
+    if (userRole === 'member' && memberData?.team_id) {
+      setSelectedTeamId(memberData.team_id);
+    } else if (userRole === 'admin' && teams.length > 0 && !selectedTeamId) {
+      setSelectedTeamId(teams[0].id);
+    }
+  }, [userRole, memberData, teams, selectedTeamId]);
 
   const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTeamName) return;
     setIsCreatingTeam(true);
     
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('teams')
       .insert({ name: newTeamName })
       .select();
@@ -81,7 +91,6 @@ export default function TeamsDashboard() {
 
   const handleAssignMember = async (memberId: string) => {
     if (!selectedTeamId) return;
-    // Update the application record to attach it to the team
     await supabase
       .from('applications')
       .update({ team_id: selectedTeamId })
@@ -98,12 +107,10 @@ export default function TeamsDashboard() {
   };
 
   const handleRemoveMember = async (memberId: string) => {
-    // Unassign member
     await supabase
       .from('applications')
       .update({ team_id: null })
       .eq('id', memberId);
-    
     fetchData();
   };
 
@@ -125,7 +132,6 @@ export default function TeamsDashboard() {
       .from('tasks')
       .update({ status: newStatus })
       .eq('id', taskId);
-    
     fetchData();
   };
 
@@ -134,28 +140,38 @@ export default function TeamsDashboard() {
     fetchData();
   };
 
+  // For members: only show their own team
+  const visibleTeams = userRole === 'member'
+    ? teams.filter(t => t.id === memberData?.team_id)
+    : teams;
+
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
+
+  // Member with no team assigned
+  const memberHasNoTeam = userRole === 'member' && !memberData?.team_id;
 
   return (
     <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
-        {/* Simplified Admin Sidebar */}
+        {/* Sidebar */}
         <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
           <div className="flex items-center gap-3 mb-12">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
               <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
             </div>
             <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-              ADMIN
+              {userRole === 'admin' ? 'ADMIN' : 'MEMBER'}
             </span>
           </div>
 
           <nav className="space-y-2 flex-1">
             {userRole === 'admin' && (
-              <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-                <Users className="w-5 h-5" /> Applications
-              </Link>
+              <>
+                <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Users className="w-5 h-5" /> Applications
+                </Link>
+              </>
             )}
             <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]">
               <Network className="w-5 h-5" /> Teams
@@ -164,9 +180,27 @@ export default function TeamsDashboard() {
               <Calendar className="w-5 h-5" /> Announcements
             </Link>
             {userRole === 'admin' && (
-              <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-                <Activity className="w-5 h-5" /> Post Management
-              </Link>
+              <>
+                <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Activity className="w-5 h-5" /> Post Management
+                </Link>
+                <Link href="/dashboard/components" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Shield className="w-5 h-5" /> Components
+                </Link>
+                <Link href="/dashboard/payments" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Activity className="w-5 h-5" /> Payments
+                </Link>
+              </>
+            )}
+            {userRole === 'member' && (
+              <>
+                <Link href="/dashboard/components" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Shield className="w-5 h-5" /> Components
+                </Link>
+                <Link href="/dashboard/payments" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Activity className="w-5 h-5" /> Payments
+                </Link>
+              </>
             )}
           </nav>
 
@@ -191,24 +225,35 @@ export default function TeamsDashboard() {
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
               <Network className="w-8 h-8 text-indigo-500" />
-              Team Assembly Matrix
+              {userRole === 'member' ? 'My Team' : 'Team Assembly Matrix'}
             </h1>
             <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
-              Group approved engineers into specialized teams, monitor their technical rosters, and assign dynamic tasks.
+              {userRole === 'member'
+                ? 'View your team details and manage your assigned task directives.'
+                : 'Group approved engineers into specialized teams, monitor their technical rosters, and assign dynamic tasks.'}
             </p>
           </div>
 
+          {/* Member with no team */}
+          {memberHasNoTeam && (
+            <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-16 flex flex-col items-center justify-center text-center">
+              <Network className="w-16 h-16 text-gray-700 mb-6" />
+              <h2 className="text-2xl font-bold text-gray-400">Not Assigned to a Team</h2>
+              <p className="text-gray-500 max-w-sm mt-3">You haven&apos;t been assigned to a team yet. Please wait for an admin to assign you.</p>
+            </div>
+          )}
+
+          {!memberHasNoTeam && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full min-h-[70vh]">
             
-            {/* Left Column: Team Directory List */}
+            {/* Left Column: Team Directory List (Admin only) */}
+            {userRole === 'admin' && (
             <div className="lg:col-span-4 flex flex-col gap-6">
-              
               <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-6 backdrop-blur-sm shadow-xl flex flex-col h-full">
                 <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-6 flex justify-between items-center">
                   Active Teams
                 </h2>
 
-                {userRole === 'admin' && (
                 <form onSubmit={handleCreateTeam} className="flex gap-2 mb-6">
                   <input
                     type="text"
@@ -222,7 +267,6 @@ export default function TeamsDashboard() {
                     <Plus className="w-5 h-5" />
                   </button>
                 </form>
-                )}
 
                 {isLoading ? (
                   <div className="flex-1 flex justify-center py-20">
@@ -230,7 +274,7 @@ export default function TeamsDashboard() {
                   </div>
                 ) : (
                   <div className="space-y-3 overflow-y-auto flex-1 pr-2">
-                    {teams.map((team) => (
+                    {visibleTeams.map((team) => (
                       <div 
                         key={team.id}
                         onClick={() => setSelectedTeamId(team.id)}
@@ -247,16 +291,17 @@ export default function TeamsDashboard() {
                         <ChevronRight className={`w-5 h-5 ${selectedTeamId === team.id ? 'text-indigo-500' : 'text-gray-600'} group-hover:translate-x-1 transition-transform`} />
                       </div>
                     ))}
-                    {teams.length === 0 && (
+                    {visibleTeams.length === 0 && (
                       <p className="text-center text-gray-500 text-sm mt-10">No active teams.</p>
                     )}
                   </div>
                 )}
               </div>
             </div>
+            )}
 
             {/* Right Column: Selected Team Deep Dive */}
-            <div className="lg:col-span-8 flex flex-col gap-6">
+            <div className={`${userRole === 'admin' ? 'lg:col-span-8' : 'lg:col-span-12'} flex flex-col gap-6`}>
               
               {!selectedTeam && !isLoading ? (
                 <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-16 flex flex-col items-center justify-center text-center h-full backdrop-blur-sm">
@@ -266,7 +311,7 @@ export default function TeamsDashboard() {
                 </div>
               ) : selectedTeam && (
                 <>
-                  {/* Top Bar inside deep dive */}
+                  {/* Top Bar */}
                   <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-sm shadow-xl flex justify-between items-center">
                     <div>
                       <h2 className="text-2xl font-bold text-white mb-2">{selectedTeam.name}</h2>
@@ -365,14 +410,19 @@ export default function TeamsDashboard() {
                         {selectedTeam.tasks?.length === 0 && (
                           <div className="bg-[#030712] border border-dashed border-white/10 rounded-xl p-10 flex flex-col items-center justify-center text-center">
                             <CheckCircle2 className="w-8 h-8 text-gray-700 mb-3" />
-                            <p className="text-gray-500 text-sm">All tasks cleared.</p>
+                            <p className="text-gray-500 text-sm">No tasks assigned yet.</p>
                           </div>
                         )}
 
                         {selectedTeam.tasks?.map((task: any) => (
                            <div key={task.id} className="bg-[#030712] border border-white/5 rounded-xl p-4 flex items-center justify-between group">
                              <div className="flex items-center gap-3">
-                               <button onClick={() => userRole === 'admin' && handleToggleTaskStatus(task.id, task.status)} className={`p-1 ${userRole === 'admin' ? 'hover:bg-white/5 cursor-pointer' : 'cursor-default'} rounded-full transition-colors flex-shrink-0`}>
+                               {/* Members can also toggle task completion */}
+                               <button 
+                                 onClick={() => handleToggleTaskStatus(task.id, task.status)} 
+                                 className="p-1 hover:bg-white/5 cursor-pointer rounded-full transition-colors flex-shrink-0"
+                                 title={task.status === 'completed' ? 'Mark as Pending' : 'Mark as Completed'}
+                               >
                                  {task.status === 'completed' ? (
                                    <CheckCircle2 className="w-5 h-5 text-indigo-500" />
                                  ) : (
@@ -398,11 +448,10 @@ export default function TeamsDashboard() {
               )}
             </div>
           </div>
+          )}
 
         </div>
       </div>
     </div>
   );
 }
-
-

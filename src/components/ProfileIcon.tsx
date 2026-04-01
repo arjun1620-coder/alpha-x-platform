@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Mail, Phone, Lock, Save, Loader2, X } from "lucide-react";
+import { User, Mail, Phone, Lock, Save, Loader2, X, Shield, Users } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function ProfileIcon() {
@@ -75,14 +75,35 @@ export default function ProfileIcon() {
      setIsUpdating(false);
   };
 
+  // Show for BOTH admin and member - but with different UI
+  if (!userRole) return null;
+
+  // ADMIN badge/button
+  if (userRole === 'admin') {
+    return (
+      <div className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/20 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]">
+        <Shield className="w-4 h-4 text-indigo-400" />
+        <span className="text-indigo-300 font-bold text-xs tracking-widest uppercase">Admin</span>
+      </div>
+    );
+  }
+
+  // MEMBER profile button
   if (userRole !== 'member' || !member) {
-      return null;
+    return null;
   }
 
   return (
     <>
+      {/* Role badge shown at top-left */}
+      <div className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-slate-500/20 border border-slate-500/30 shadow-[0_0_15px_rgba(148,163,184,0.2)]">
+        <Users className="w-4 h-4 text-slate-400" />
+        <span className="text-slate-300 font-bold text-xs tracking-widest uppercase">Member</span>
+      </div>
+
+      {/* Profile icon at top-right */}
       <button 
-        title="Settings Profile"
+        title="Profile Settings"
         onClick={() => setIsOpen(true)}
         className="fixed top-6 right-6 z-50 w-12 h-12 rounded-full bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400 font-bold hover:bg-indigo-500 hover:text-black transition-all shadow-[0_0_15px_rgba(99,102,241,0.2)] hover:scale-105 active:scale-95"
       >
@@ -104,7 +125,10 @@ export default function ProfileIcon() {
                  </div>
                  <div>
                    <h2 className="text-xl font-bold text-white tracking-tight">{member.full_name}</h2>
-                   <p className="text-sm text-indigo-400 font-medium">Operative</p>
+                   <p className="text-sm text-slate-400 font-medium flex items-center gap-1.5 mt-1">
+                     <Users className="w-3.5 h-3.5" />
+                     Member
+                   </p>
                  </div>
                </div>
 

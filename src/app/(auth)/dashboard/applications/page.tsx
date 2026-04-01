@@ -2,15 +2,30 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network, Calendar, Trash2 } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network, Calendar, Trash2, Mail } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+
+async function sendNotificationEmail(to: string, subject: string, html: string) {
+  try {
+    const res = await fetch('/api/send-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, subject, html }),
+    });
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error('Failed to send email:', err);
+    return { error: 'Network error' };
+  }
+}
 
 export default function ApplicationsDashboard() {
   const [applications, setApplications] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [emailStatus, setEmailStatus] = useState<{id: string, status: string} | null>(null);
 
-  // Fetch live applications from Supabase on mount
   useEffect(() => {
     fetchApplications();
   }, []);
@@ -30,14 +45,14 @@ export default function ApplicationsDashboard() {
   };
 
   const handleAction = async (id: string, action: "approved" | "rejected") => {
-    // 1. Optimistic UI update (feels instant to the admin)
+    // Optimistic UI update
     setApplications(prev => 
       prev.map(app => 
         app.id === id ? { ...app, status: action } : app
       )
     );
 
-    // 2. Perform the actual database update
+    // Database update
     const { error } = await supabase
       .from('applications')
       .update({ status: action })
@@ -45,18 +60,104 @@ export default function ApplicationsDashboard() {
 
     if (error) {
       console.error("Failed to update status:", error);
-      // Revert if error occurs by refreshing data
       fetchApplications();
+      return;
+    }
+
+    // Send email notification if approved
+    const app = applications.find(a => a.id === id);
+    if (app && action === 'approved') {
+      setEmailStatus({ id, status: 'sending' });
+      
+      const loginId = app.id;
+      const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"></head>
+        <body style="margin:0;padding:0;background:#030712;font-family:Inter,Arial,sans-serif;">
+          <div style="max-width:560px;margin:40px auto;background:#080d1a;border:1px solid rgba(255,255,255,0.1);border-radius:24px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#4f46e5,#1e293b);padding:40px 32px;text-align:center;">
+              <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;">
+                <div style="width:40px;height:40px;background:rgba(0,0,0,0.3);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:14px;">AX</div>
+                <span style="color:white;font-size:20px;font-weight:800;letter-spacing:4px;">ALPHA X</span>
+              </div>
+              <h1 style="color:white;font-size:26px;font-weight:900;margin:0 0 8px;">Application Approved! 🎉</h1>
+              <p style="color:rgba(255,255,255,0.7);margin:0;font-size:14px;">Welcome to the team, ${app.full_name}!</p>
+            </div>
+            <div style="padding:32px;">
+              <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 24px;">
+                Congratulations! Your application to join <strong style="color:white;">Alpha X Robotics</strong> has been reviewed and approved by our admin team.
+              </p>
+              <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:16px;padding:24px;margin-bottom:24px;">
+                <p style="color:#a5b4fc;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Your Login Credentials</p>
+                <div style="margin-bottom:12px;">
+                  <span style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;">Email / Username</span>
+                  <p style="color:white;font-size:15px;font-weight:600;margin:4px 0 0;">${app.email}</p>
+                </div>
+                <div>
+                  <span style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;">Password / Login ID</span>
+                  <p style="color:#a5b4fc;font-size:13px;font-weight:700;font-family:monospace;margin:4px 0 0;word-break:break-all;">${loginId}</p>
+                </div>
+                <p style="color:#64748b;font-size:11px;margin:12px 0 0;">You can change your password after logging in via your profile settings.</p>
+              </div>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/login" style="display:block;background:#6366f1;color:black;text-align:center;padding:16px;border-radius:12px;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;margin-bottom:24px;">
+                Login to Alpha X →
+              </a>
+              <p style="color:#475569;font-size:12px;text-align:center;margin:0;">Alpha X Robotics Platform • Confidential</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      const result = await sendNotificationEmail(
+        app.email,
+        '🎉 Alpha X Application Approved – Your Login Details',
+        emailHtml
+      );
+
+      if (result.success) {
+        setEmailStatus({ id, status: 'sent' });
+      } else {
+        setEmailStatus({ id, status: 'failed' });
+      }
+
+      setTimeout(() => setEmailStatus(null), 4000);
+    }
+
+    if (app && action === 'rejected') {
+      // Send rejection email
+      const emailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <body style="margin:0;padding:0;background:#030712;font-family:Inter,Arial,sans-serif;">
+          <div style="max-width:560px;margin:40px auto;background:#080d1a;border:1px solid rgba(255,255,255,0.1);border-radius:24px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:40px 32px;text-align:center;">
+              <h1 style="color:white;font-size:24px;font-weight:900;margin:0 0 8px;">Application Update</h1>
+              <p style="color:rgba(255,255,255,0.6);margin:0;font-size:14px;">From Alpha X Robotics</p>
+            </div>
+            <div style="padding:32px;">
+              <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 16px;">Dear ${app.full_name},</p>
+              <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 16px;">
+                Thank you for your interest in <strong style="color:white;">Alpha X Robotics</strong>. After reviewing your application, we regret to inform you that we are unable to move forward at this time.
+              </p>
+              <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0;">
+                We encourage you to continue developing your skills and apply again in the future. Thank you for your time.
+              </p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+      sendNotificationEmail(app.email, 'Alpha X Robotics – Application Status Update', emailHtml);
     }
   };
 
   const handleDeleteApplication = async (id: string, fullName: string) => {
     if (!confirm(`Are you sure you want to completely erase ${fullName}'s data from Alpha X? This action is permanent and cannot be undone.`)) return;
 
-    // Optimistic UI update
     setApplications(prev => prev.filter(app => app.id !== id));
 
-    // Database delete
     const { error } = await supabase
       .from('applications')
       .delete()
@@ -105,6 +206,14 @@ export default function ApplicationsDashboard() {
               <Activity className="w-5 h-5" />
               Post Management
             </Link>
+            <Link href="/dashboard/components" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+              <Shield className="w-5 h-5" />
+              Components
+            </Link>
+            <Link href="/dashboard/payments" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+              <Activity className="w-5 h-5" />
+              Payments
+            </Link>
           </nav>
 
           <button 
@@ -131,7 +240,7 @@ export default function ApplicationsDashboard() {
                 Applications
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
-                Review and approve newly submitted profiles to grant them access to the platform.
+                Review and approve newly submitted profiles. Approved members will be automatically notified by email.
               </p>
             </div>
 
@@ -148,6 +257,22 @@ export default function ApplicationsDashboard() {
               />
             </div>
           </div>
+
+          {/* Email status toast */}
+          {emailStatus && (
+            <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl border shadow-2xl backdrop-blur-xl transition-all ${
+              emailStatus.status === 'sending' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300' :
+              emailStatus.status === 'sent' ? 'bg-green-500/20 border-green-500/30 text-green-300' :
+              'bg-red-500/20 border-red-500/30 text-red-300'
+            }`}>
+              <Mail className="w-4 h-4" />
+              <span className="text-sm font-medium">
+                {emailStatus.status === 'sending' ? 'Sending approval email...' :
+                 emailStatus.status === 'sent' ? 'Approval email sent!' :
+                 'Email delivery failed (check GMAIL env vars)'}
+              </span>
+            </div>
+          )}
 
           {/* Table Container */}
           <div className="bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl min-h-[50vh]">
@@ -181,7 +306,7 @@ export default function ApplicationsDashboard() {
                           <div className="font-bold text-white text-base">{app.full_name}</div>
                           <div className="text-indigo-400 font-medium text-xs mt-1">{app.email}</div>
                           <div className="text-gray-500 text-[10px] mt-1 break-all max-w-[150px] truncate" title="This is the user's login password.">
-                            Password / ID: {app.id}
+                            Login ID: {app.id}
                           </div>
                         </td>
                         <td className="px-6 py-5">
@@ -222,7 +347,7 @@ export default function ApplicationsDashboard() {
                               <button 
                                 onClick={() => handleAction(app.id, 'approved')}
                                 className="p-2 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-400/10 rounded-lg border border-indigo-500/30 transition-all shadow-[0_0_15px_rgba(99,102,241,0.15)] hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-105 active:scale-95"
-                                title="Approve"
+                                title="Approve &amp; Notify via Email"
                               >
                                 <CheckCircle2 className="w-5 h-5" />
                               </button>
@@ -232,7 +357,7 @@ export default function ApplicationsDashboard() {
                               <span className="text-gray-600 text-[10px] font-bold tracking-widest uppercase">Actioned</span>
                               <button 
                                 onClick={() => handleDeleteApplication(app.id, app.full_name)}
-                                className="p-2 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20 shadow-none hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+                                className="p-2 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
                                 title="Permanently Erase from Alpha X"
                               >
                                 <Trash2 className="w-4 h-4" />

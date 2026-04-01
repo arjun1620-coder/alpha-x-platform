@@ -5,6 +5,64 @@ import Link from "next/link";
 import { ArrowLeft, Users, Activity, PlusSquare, Network, Calendar, Trophy, AlertTriangle, Megaphone, Trash2, Shield, Loader2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+async function sendAnnouncementEmails(title: string, description: string, category: string, eventDate: string) {
+  try {
+    // Fetch all approved members' emails
+    const { data: members } = await supabase
+      .from('applications')
+      .select('email, full_name')
+      .eq('status', 'approved');
+
+    if (!members || members.length === 0) return;
+
+    const categoryColors: Record<string, string> = {
+      competition: '#facc15',
+      deadline: '#f87171',
+      event: '#60a5fa',
+      announcement: '#818cf8',
+    };
+
+    const color = categoryColors[category] || '#818cf8';
+    const formattedDate = new Date(eventDate).toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+    for (const member of members) {
+      const html = `
+        <!DOCTYPE html>
+        <html>
+        <body style="margin:0;padding:0;background:#030712;font-family:Inter,Arial,sans-serif;">
+          <div style="max-width:560px;margin:40px auto;background:#080d1a;border:1px solid rgba(255,255,255,0.1);border-radius:24px;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:40px 32px;text-align:center;border-bottom:1px solid rgba(255,255,255,0.05);">
+              <div style="display:inline-block;padding:6px 16px;border-radius:20px;border:1px solid ${color}40;background:${color}15;color:${color};font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;">${category}</div>
+              <h1 style="color:white;font-size:24px;font-weight:900;margin:0;">${title}</h1>
+            </div>
+            <div style="padding:32px;">
+              <p style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin:0 0 8px;">📅 ${formattedDate}</p>
+              <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0 0 24px;">${description}</p>
+              <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard/events" style="display:block;background:#6366f1;color:black;text-align:center;padding:14px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
+                View All Announcements →
+              </a>
+              <p style="color:#334155;font-size:11px;text-align:center;margin-top:20px;">Alpha X Robotics Platform</p>
+            </div>
+          </div>
+        </body>
+        </html>
+      `;
+
+      await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: member.email,
+          subject: `📢 Alpha X Announcement: ${title}`,
+          html,
+        }),
+      });
+    }
+  } catch (err) {
+    console.error('Failed to send announcement emails:', err);
+  }
+}
+
 export default function EventsDashboard() {
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -16,6 +74,7 @@ export default function EventsDashboard() {
   const [eventDate, setEventDate] = useState("");
   const [category, setCategory] = useState("announcement");
   const [isPublishing, setIsPublishing] = useState(false);
+  const [notifyMembers, setNotifyMembers] = useState(true);
 
   useEffect(() => {
     setUserRole(localStorage.getItem('userRole'));
@@ -24,10 +83,10 @@ export default function EventsDashboard() {
 
   const fetchEvents = async () => {
     setIsLoading(true);
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('events')
       .select('*')
-      .order('event_date', { ascending: true }); // Show closest first
+      .order('event_date', { ascending: true });
     
     if (data) setEvents(data);
     setIsLoading(false);
@@ -47,6 +106,10 @@ export default function EventsDashboard() {
     });
 
     if (!error) {
+      // Send notification emails to all members if enabled
+      if (notifyMembers) {
+        await sendAnnouncementEmails(title, description, category, eventDate);
+      }
       setTitle("");
       setDescription("");
       setEventDate("");
@@ -85,22 +148,24 @@ export default function EventsDashboard() {
     <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
-        {/* Simplified Admin Sidebar */}
+        {/* Sidebar */}
         <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
           <div className="flex items-center gap-3 mb-12">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
               <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
             </div>
             <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-              ADMIN
+              {userRole === 'admin' ? 'ADMIN' : 'MEMBER'}
             </span>
           </div>
 
           <nav className="space-y-2 flex-1">
             {userRole === 'admin' && (
-              <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-                <Users className="w-5 h-5" /> Applications
-              </Link>
+              <>
+                <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                  <Users className="w-5 h-5" /> Applications
+                </Link>
+              </>
             )}
             <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
               <Network className="w-5 h-5" /> Teams
@@ -113,6 +178,12 @@ export default function EventsDashboard() {
                 <Activity className="w-5 h-5" /> Post Management
               </Link>
             )}
+            <Link href="/dashboard/components" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+              <Shield className="w-5 h-5" /> Components
+            </Link>
+            <Link href="/dashboard/payments" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+              <Activity className="w-5 h-5" /> Payments
+            </Link>
           </nav>
 
           <button 
@@ -135,7 +206,7 @@ export default function EventsDashboard() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
                 <Calendar className="w-8 h-8 text-indigo-500" />
-                Operations & Events Ledger
+                Operations &amp; Events Ledger
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
                 Broadcast critical deadlines, upcoming hacker competitions, and administrative announcements across the platform grid.
@@ -165,7 +236,7 @@ export default function EventsDashboard() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Date/Deadline *</label>
-                  <input required type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner color-scheme-dark" style={{colorScheme: 'dark'}} />
+                  <input required type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner" style={{colorScheme: 'dark'}} />
                 </div>
 
                 <div className="space-y-2">
@@ -176,6 +247,20 @@ export default function EventsDashboard() {
                     <option value="deadline">Deadline</option>
                     <option value="event">Event</option>
                   </select>
+                </div>
+
+                {/* Email notification toggle */}
+                <div className="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-3">
+                  <input
+                    type="checkbox"
+                    id="notifyMembers"
+                    checked={notifyMembers}
+                    onChange={(e) => setNotifyMembers(e.target.checked)}
+                    className="w-4 h-4 accent-indigo-500"
+                  />
+                  <label htmlFor="notifyMembers" className="text-sm text-indigo-300 font-medium cursor-pointer">
+                    Notify all members via Gmail
+                  </label>
                 </div>
 
                 <button type="submit" disabled={isPublishing || !title || !description || !eventDate || !category} className="w-full flex items-center justify-center gap-3 py-4 mt-4 bg-indigo-500 text-black rounded-xl font-black tracking-wide hover:bg-indigo-400 disabled:opacity-50 transition-all active:scale-95">
