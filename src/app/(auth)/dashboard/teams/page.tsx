@@ -9,8 +9,10 @@ export default function TeamsDashboard() {
   const [teams, setTeams] = useState<any[]>([]);
   const [availableMembers, setAvailableMembers] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const [selectedNewMember, setSelectedNewMember] = useState("");
   
   // Forms
   const [newTeamName, setNewTeamName] = useState("");
@@ -18,6 +20,7 @@ export default function TeamsDashboard() {
   const [isCreatingTeam, setIsCreatingTeam] = useState(false);
 
   useEffect(() => {
+    setUserRole(localStorage.getItem('userRole'));
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -34,15 +37,14 @@ export default function TeamsDashboard() {
       `)
       .order('created_at', { ascending: false });
 
-    // 2. Fetch all approved applications that are not yet in a team
-    const { data: dbAvailable, error: availError } = await supabase
+    // 2. Fetch all approved applications (so we can add unassigned or move assigned members)
+    const { data: dbApproved, error: availError } = await supabase
       .from('applications')
       .select('*')
-      .eq('status', 'approved')
-      .is('team_id', null);
+      .eq('status', 'approved');
 
     if (dbTeams) setTeams(dbTeams);
-    if (dbAvailable) setAvailableMembers(dbAvailable);
+    if (dbApproved) setAvailableMembers(dbApproved);
     
     // Automatically select the first team if none selected
     if (dbTeams && dbTeams.length > 0 && !selectedTeamId) {
@@ -85,7 +87,14 @@ export default function TeamsDashboard() {
       .update({ team_id: selectedTeamId })
       .eq('id', memberId);
     
+    setSelectedNewMember("");
     fetchData();
+  };
+
+  const handleAddMemberFromDropdown = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedNewMember || !selectedTeamId) return;
+    await handleAssignMember(selectedNewMember);
   };
 
   const handleRemoveMember = async (memberId: string) => {
@@ -143,26 +152,31 @@ export default function TeamsDashboard() {
           </div>
 
           <nav className="space-y-2 flex-1">
-            <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Users className="w-5 h-5" />
-              Applications
-            </Link>
+            {userRole === 'admin' && (
+              <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <Users className="w-5 h-5" /> Applications
+              </Link>
+            )}
             <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
-              <Network className="w-5 h-5" />
-              Teams
+              <Network className="w-5 h-5" /> Teams
             </Link>
             <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Calendar className="w-5 h-5" />
-              Announcements
+              <Calendar className="w-5 h-5" /> Announcements
             </Link>
-            <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Activity className="w-5 h-5" />
-              Post Management
-            </Link>
+            {userRole === 'admin' && (
+              <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <Activity className="w-5 h-5" /> Post Management
+              </Link>
+            )}
           </nav>
 
           <button 
-            onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }}
+            onClick={async () => {
+              if (userRole === 'admin') await supabase.auth.signOut();
+              localStorage.removeItem('userRole');
+              localStorage.removeItem('memberData');
+              window.location.href='/login';
+            }}
             className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -194,6 +208,7 @@ export default function TeamsDashboard() {
                   Active Teams
                 </h2>
 
+                {userRole === 'admin' && (
                 <form onSubmit={handleCreateTeam} className="flex gap-2 mb-6">
                   <input
                     type="text"
@@ -207,6 +222,7 @@ export default function TeamsDashboard() {
                     <Plus className="w-5 h-5" />
                   </button>
                 </form>
+                )}
 
                 {isLoading ? (
                   <div className="flex-1 flex justify-center py-20">
@@ -256,9 +272,11 @@ export default function TeamsDashboard() {
                       <h2 className="text-2xl font-bold text-white mb-2">{selectedTeam.name}</h2>
                       <p className="text-sm text-gray-400 font-medium font-mono">ID: {selectedTeam.id}</p>
                     </div>
+                    {userRole === 'admin' && (
                     <button onClick={() => handleDeleteTeam(selectedTeam.id)} className="px-4 py-2 border border-red-500/20 text-red-400 bg-red-500/10 rounded-xl hover:bg-red-500 hover:text-white transition-all text-sm font-bold tracking-wider uppercase">
                       Disband Team
                     </button>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 flex-1">
@@ -268,8 +286,33 @@ export default function TeamsDashboard() {
                       <h3 className="text-sm font-bold uppercase tracking-widest text-emerald-400 mb-6 flex items-center gap-2">
                         <Users className="w-4 h-4" /> Team Roster ({selectedTeam.members?.length || 0})
                       </h3>
+
+                      {userRole === 'admin' && (
+                        <form onSubmit={handleAddMemberFromDropdown} className="flex gap-2 mb-6 bg-[#030712] p-2 rounded-xl border border-white/10 shadow-inner">
+                          <select 
+                            aria-label="Select Operative to Add"
+                            value={selectedNewMember}
+                            onChange={(e) => setSelectedNewMember(e.target.value)}
+                            className="flex-1 bg-transparent text-sm text-white focus:outline-none px-2 appearance-none"
+                          >
+                            <option value="" disabled>+ Select Operative to Add...</option>
+                            {availableMembers.filter((m: any) => m.team_id !== selectedTeam.id).map((member: any) => (
+                              <option key={member.id} value={member.id}>
+                                {member.full_name} {member.team_id ? '(Move from another team)' : '(Unassigned)'}
+                              </option>
+                            ))}
+                          </select>
+                          <button 
+                            type="submit" 
+                            disabled={!selectedNewMember} 
+                            className="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all disabled:opacity-50 hover:bg-emerald-400"
+                          >
+                            Add
+                          </button>
+                        </form>
+                      )}
                       
-                      <div className="space-y-3 mb-8 overflow-y-auto max-h-60">
+                      <div className="space-y-3 mb-8 overflow-y-auto max-h-80 flex-1">
                         {selectedTeam.members?.map((member: any) => (
                           <div key={member.id} className="bg-[#030712] border border-white/5 rounded-xl p-4 flex items-center justify-between group hover:border-white/10 transition-colors">
                             <div className="flex items-center gap-3">
@@ -281,36 +324,17 @@ export default function TeamsDashboard() {
                                 <p className="text-xs text-teal-400">{(member.skills || []).slice(0,2).join(", ")}</p>
                               </div>
                             </div>
+                            {userRole === 'admin' && (
                             <button onClick={() => handleRemoveMember(member.id)} className="text-gray-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 p-2">
                               <X className="w-4 h-4" />
                             </button>
+                            )}
                           </div>
                         ))}
                         {(!selectedTeam.members || selectedTeam.members.length === 0) && (
                           <div className="bg-[#030712] border border-dashed border-white/10 rounded-xl p-8 text-center text-gray-500 text-sm">
                             No members assigned yet
                           </div>
-                        )}
-                      </div>
-
-                      {/* Recruitment Pool */}
-                      <div className="mt-auto">
-                        <h3 className="text-xs font-bold uppercase tracking-widest text-gray-400 mb-3 ml-2 border-t border-white/5 pt-4">
-                          Available Operatives Pool ({availableMembers.length})
-                        </h3>
-                        {availableMembers.length > 0 ? (
-                          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto">
-                            {availableMembers.map(member => (
-                              <button 
-                                key={member.id} onClick={() => handleAssignMember(member.id)}
-                                className="text-xs font-semibold bg-white/5 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/40 border border-white/10 px-3 py-1.5 rounded-full transition-all flex items-center gap-1 active:scale-95"
-                              >
-                                <Plus className="w-3 h-3" /> {member.full_name?.split(' ')[0] || "Operative"}
-                              </button>
-                            ))}
-                          </div>
-                        ) : (
-                          <p className="text-xs text-gray-600 ml-2">No unassigned operators remaining.</p>
                         )}
                       </div>
                     </div>
@@ -321,6 +345,7 @@ export default function TeamsDashboard() {
                         <Target className="w-4 h-4" /> Task Directives
                       </h3>
 
+                      {userRole === 'admin' && (
                       <form onSubmit={handleAddTask} className="flex gap-2 mb-6">
                         <input
                           type="text"
@@ -334,6 +359,7 @@ export default function TeamsDashboard() {
                           Add
                         </button>
                       </form>
+                      )}
 
                       <div className="space-y-2 overflow-y-auto flex-1 h-full pr-2">
                         {selectedTeam.tasks?.length === 0 && (
@@ -346,7 +372,7 @@ export default function TeamsDashboard() {
                         {selectedTeam.tasks?.map((task: any) => (
                            <div key={task.id} className="bg-[#030712] border border-white/5 rounded-xl p-4 flex items-center justify-between group">
                              <div className="flex items-center gap-3">
-                               <button onClick={() => handleToggleTaskStatus(task.id, task.status)} className="p-1 hover:bg-white/5 rounded-full transition-colors flex-shrink-0">
+                               <button onClick={() => userRole === 'admin' && handleToggleTaskStatus(task.id, task.status)} className={`p-1 ${userRole === 'admin' ? 'hover:bg-white/5 cursor-pointer' : 'cursor-default'} rounded-full transition-colors flex-shrink-0`}>
                                  {task.status === 'completed' ? (
                                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                                  ) : (
@@ -357,9 +383,11 @@ export default function TeamsDashboard() {
                                  {task.title}
                                </span>
                              </div>
+                             {userRole === 'admin' && (
                              <button onClick={() => handleDeleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 p-2 transition-all">
                                <Trash2 className="w-4 h-4" />
                              </button>
+                             )}
                            </div>
                         ))}
                       </div>

@@ -14,6 +14,7 @@ const PREDEFINED_SKILLS = [
 export default function JoinPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [applicantId, setApplicantId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
 
@@ -36,7 +37,8 @@ export default function JoinPage() {
     try {
       setErrorMsg(null);
       const result = await submitApplication(formData);
-      if (result?.success) {
+      if (result?.success && result.data) {
+        setApplicantId(result.data.id);
         setIsSuccess(true);
       } else {
         setErrorMsg(result?.message || "Warning: Database connection failed. Please ensure your .env.local keys are correct and you completely rebooted the Next.js server.");
@@ -78,9 +80,22 @@ export default function JoinPage() {
               <CheckCircle2 className="w-12 h-12 text-emerald-400" />
             </div>
             <h2 className="text-4xl font-bold mb-4 tracking-tight">Application Secured</h2>
-            <p className="text-gray-400 max-w-md mx-auto mb-10 text-lg leading-relaxed">
+            <p className="text-gray-400 max-w-md mx-auto mb-6 text-lg leading-relaxed">
               Your application has been submitted successfully. We will review your credentials and contact you shortly.
             </p>
+            
+            {applicantId && (
+              <div className="bg-[#030712] border border-emerald-500/50 rounded-xl p-6 mb-10 mx-auto max-w-sm">
+                <p className="text-xs text-emerald-400 font-bold tracking-widest uppercase mb-2">Your Secure Tracking ID</p>
+                <div className="font-mono text-sm text-white bg-white/5 py-3 px-4 rounded-lg border border-white/10 break-all select-all">
+                  {applicantId}
+                </div>
+                <p className="text-xs text-gray-500 mt-3 flex items-center gap-2 justify-center">
+                  ⚠️ Save this ID. It will be required as your password to login if you are approved.
+                </p>
+              </div>
+            )}
+
             <Link href="/" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-black rounded-full font-bold hover:bg-gray-200 transition-all hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.2)]">
               Return Home
             </Link>

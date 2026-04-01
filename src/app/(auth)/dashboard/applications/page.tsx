@@ -90,7 +90,12 @@ export default function ApplicationsDashboard() {
           </nav>
 
           <button 
-            onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              localStorage.removeItem('userRole');
+              localStorage.removeItem('memberData');
+              window.location.href='/login';
+            }}
             className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -157,7 +162,9 @@ export default function ApplicationsDashboard() {
                         <td className="px-6 py-5">
                           <div className="font-bold text-white text-base">{app.full_name}</div>
                           <div className="text-emerald-400 font-medium text-xs mt-1">{app.email}</div>
-                          <div className="text-gray-500 text-[10px] mt-1 break-all max-w-[120px] truncate">ID: {app.id}</div>
+                          <div className="text-gray-500 text-[10px] mt-1 break-all max-w-[150px] truncate" title="This is the user's login password.">
+                            Password / ID: {app.id}
+                          </div>
                         </td>
                         <td className="px-6 py-5">
                           <div className="text-gray-300 font-medium">{app.college}</div>

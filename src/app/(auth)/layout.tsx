@@ -19,15 +19,22 @@ export default function AuthLayout({
     const checkAuth = async () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        const userRole = localStorage.getItem('userRole');
         
-        if (!session) {
-          router.push("/login?error=Unauthorized%20Access");
+        // Allow if there's a Supabase session (Admin) OR a member role
+        if (!session && userRole !== 'member') {
+          if (isMounted) router.push("/login?error=Unauthorized%20Access");
         } else if (isMounted) {
-          setIsLoading(false);
+          // If member is trying to access applications or posts (admin only), redirect them
+          if (userRole === 'member' && (pathname.includes('/applications') || pathname.includes('/posts'))) {
+            router.push('/dashboard/teams');
+          } else {
+            setIsLoading(false);
+          }
         }
       } catch (err) {
         console.error("Auth check failed:", err);
-        router.push("/login");
+        if (isMounted) router.push("/login");
       }
     };
 
@@ -35,7 +42,8 @@ export default function AuthLayout({
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
-        if (!session && isMounted) {
+        const userRole = localStorage.getItem('userRole');
+        if (!session && userRole !== 'member' && isMounted) {
           router.push("/login");
         }
       }

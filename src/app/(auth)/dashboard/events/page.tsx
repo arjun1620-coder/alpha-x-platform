@@ -8,6 +8,7 @@ import { supabase } from "@/lib/supabase";
 export default function EventsDashboard() {
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userRole, setUserRole] = useState<string | null>(null);
   
   // Form State
   const [title, setTitle] = useState("");
@@ -17,6 +18,7 @@ export default function EventsDashboard() {
   const [isPublishing, setIsPublishing] = useState(false);
 
   useEffect(() => {
+    setUserRole(localStorage.getItem('userRole'));
     fetchEvents();
   }, []);
 
@@ -95,22 +97,31 @@ export default function EventsDashboard() {
           </div>
 
           <nav className="space-y-2 flex-1">
-            <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Users className="w-5 h-5" /> Applications
-            </Link>
+            {userRole === 'admin' && (
+              <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <Users className="w-5 h-5" /> Applications
+              </Link>
+            )}
             <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
               <Network className="w-5 h-5" /> Teams
             </Link>
             <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
               <Calendar className="w-5 h-5" /> Announcements
             </Link>
-            <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Activity className="w-5 h-5" /> Post Management
-            </Link>
+            {userRole === 'admin' && (
+              <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
+                <Activity className="w-5 h-5" /> Post Management
+              </Link>
+            )}
           </nav>
 
           <button 
-            onClick={async () => { await supabase.auth.signOut(); window.location.href='/login'; }}
+            onClick={async () => {
+              if (userRole === 'admin') await supabase.auth.signOut();
+              localStorage.removeItem('userRole');
+              localStorage.removeItem('memberData');
+              window.location.href='/login';
+            }}
             className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left"
           >
             <ArrowLeft className="w-5 h-5" /> Sign Out
@@ -135,6 +146,7 @@ export default function EventsDashboard() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* Publisher Form */}
+            {userRole === 'admin' && (
             <div className="lg:col-span-4 bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-sm shadow-2xl sticky top-8">
               <h2 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white/5 pb-5 text-emerald-400 uppercase tracking-widest text-sm">
                 <PlusSquare className="w-5 h-5" /> New Broadcast
@@ -171,9 +183,10 @@ export default function EventsDashboard() {
                 </button>
               </form>
             </div>
+            )}
 
             {/* Event List */}
-            <div className="lg:col-span-8 flex flex-col gap-4">
+            <div className={`${userRole === 'admin' ? 'lg:col-span-8' : 'lg:col-span-12'} flex flex-col gap-4`}>
               {isLoading ? (
                 <div className="flex justify-center p-20"><Loader2 className="w-10 h-10 text-emerald-500 animate-spin" /></div>
               ) : events.length === 0 ? (
@@ -186,9 +199,11 @@ export default function EventsDashboard() {
                 events.map((ev) => (
                   <div key={ev.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 group hover:border-emerald-500/30 transition-all duration-300 shadow-xl relative backdrop-blur-sm flex flex-col sm:flex-row gap-6 items-start">
                     
+                    {userRole === 'admin' && (
                     <button onClick={() => handleDelete(ev.id)} className="absolute top-4 right-4 z-20 p-2 text-white/30 hover:text-red-400 hover:bg-red-900/30 rounded-full transition-all opacity-0 group-hover:opacity-100">
                       <Trash2 className="w-4 h-4" />
                     </button>
+                    )}
 
                     <div className={`p-4 rounded-2xl border ${getCategoryColor(ev.category)} flex-shrink-0 flex items-center justify-center`}>
                       {getCategoryIcon(ev.category, "w-8 h-8")}

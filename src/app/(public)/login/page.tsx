@@ -16,18 +16,37 @@ export default function LoginPage() {
     setIsAuthenticating(true);
     setErrorMsg("");
     
-    // Authenticate securely with Supabase
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    // 1. Try Admin Login (Supabase Auth) if password provided
+    if (password) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (error) {
-      setErrorMsg(error.message);
-      setIsAuthenticating(false);
-    } else {
-      window.location.href = "/dashboard/applications";
+      if (!error) {
+        localStorage.setItem('userRole', 'admin');
+        window.location.href = "/dashboard/applications";
+        return;
+      }
     }
+
+    // 2. Try Member Login (Check Approved Applications)
+    const { data: memberData, error: memberError } = await supabase
+      .from('applications')
+      .select('*')
+      .eq('email', email)
+      .eq('status', 'approved')
+      .single();
+
+    if (memberData && memberData.id.toString() === password) {
+      localStorage.setItem('userRole', 'member');
+      localStorage.setItem('memberData', JSON.stringify(memberData));
+      window.location.href = "/dashboard/teams";
+      return;
+    }
+
+    setErrorMsg("Invalid credentials or unauthorized access.");
+    setIsAuthenticating(false);
   };
 
   return (
@@ -74,7 +93,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Password</label>
+              <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Password / Tracking ID</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <KeyRound className="w-5 h-5 text-gray-600" />

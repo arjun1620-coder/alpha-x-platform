@@ -16,8 +16,8 @@ export async function submitApplication(formData: FormData) {
     status: 'pending'
   };
 
-  // Insert directly into the live Supabase Applications table
-  const { error } = await supabase.from('applications').insert([data]);
+  // Insert directly into the live Supabase Applications table and select it back
+  const { data: insertedData, error } = await supabase.from('applications').insert([data]).select();
 
   if (error) {
     console.error("Supabase insert error:", error.message);
@@ -29,6 +29,7 @@ export async function submitApplication(formData: FormData) {
   
   return { 
     success: true, 
+    data: insertedData?.[0],
     message: "Application submitted successfully! Our team will review your profile." 
   };
 }
