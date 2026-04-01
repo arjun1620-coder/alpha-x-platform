@@ -35,22 +35,26 @@ export default function TeamsDashboard() {
 
   const fetchData = async () => {
     setIsLoading(true);
-    // Fetch Teams with their nested tasks and members
-    const { data: dbTeams, error: teamsError } = await supabase
+    
+    // 1. Fetch all teams
+    const { data: rawTeams, error: teamsError } = await supabase
       .from('teams')
-      .select(`
-        *,
-        tasks (*),
-        members:applications!team_id (*)
-      `)
+      .select('*')
       .order('created_at', { ascending: false });
 
     if (teamsError) {
       console.error("Critical: Teams retrieval offline:", teamsError);
-      alert(`Synchronizer Error: ${teamsError.message}`);
+      alert(`Synchronizer Error (Teams): ${teamsError.message}`);
+      setIsLoading(false);
+      return;
     }
 
-    // Fetch all approved applications
+    // 2. Fetch all tasks for these teams
+    const { data: rawTasks } = await supabase
+      .from('tasks')
+      .select('*');
+
+    // 3. Fetch all approved members for these teams
     const { data: dbApproved, error: approvedError } = await supabase
       .from('applications')
       .select('*')
@@ -60,7 +64,14 @@ export default function TeamsDashboard() {
       console.error("Approved members fetch failed:", approvedError);
     }
 
-    if (dbTeams) setTeams(dbTeams);
+    // 4. Manually join data to avoid "More than one relationship" ambiguity
+    const mergedTeams = (rawTeams || []).map(team => ({
+      ...team,
+      tasks: (rawTasks || []).filter(t => t.team_id === team.id),
+      members: (dbApproved || []).filter(m => m.team_id === team.id)
+    }));
+
+    setTeams(mergedTeams);
     if (dbApproved) setAvailableMembers(dbApproved);
     
     setIsLoading(false);
