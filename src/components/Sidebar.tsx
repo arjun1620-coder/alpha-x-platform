@@ -13,7 +13,8 @@ import {
   Cpu, 
   IndianRupee, 
   Menu, 
-  X 
+  X,
+  MessageSquare 
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -44,6 +45,12 @@ export default function Sidebar() {
       href: "/dashboard/events",
       label: "Announcements",
       icon: Calendar,
+      adminOnly: false,
+    },
+    {
+      href: "/dashboard/chat",
+      label: "Live Chat",
+      icon: MessageSquare,
       adminOnly: false,
     },
     {
@@ -105,7 +112,7 @@ export default function Sidebar() {
       {/* Sidebar Content */}
       <div className={`
         fixed md:relative inset-y-0 left-0 z-[55]
-        w-64 border-r border-white/5 bg-[#080d1a] p-6 
+        w-64 border-r border-white/5 bg-[#080d1a] p-6 pt-24 md:pt-6
         flex flex-col transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>

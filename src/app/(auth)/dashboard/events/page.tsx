@@ -100,11 +100,14 @@ export default function EventsDashboard() {
     
     setIsPublishing(true);
     
+    const adminName = localStorage.getItem('adminName') || "Admin";
+
     const { error } = await supabase.from('events').insert({
       title,
       description,
       event_date: eventDate,
-      category
+      category,
+      admin_name: adminName
     });
 
     if (!error) {
@@ -257,7 +260,10 @@ export default function EventsDashboard() {
                           {new Date(ev.event_date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
                         </span>
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-2">{ev.title}</h3>
+                      <h3 className="text-xl font-bold text-white mb-1">{ev.title}</h3>
+                      {ev.admin_name && (
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-2">BROADCAST BY: {ev.admin_name}</p>
+                      )}
                       <p className="text-gray-400 text-sm leading-relaxed whitespace-pre-wrap">{ev.description}</p>
                     </div>
                   </div>

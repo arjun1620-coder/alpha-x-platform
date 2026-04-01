@@ -5,14 +5,24 @@ import Link from "next/link";
 import { ArrowLeft, Users, Activity, PlusSquare, Image as ImageIcon, Trash2, Send, X, Network, Calendar } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
+interface Post {
+  id: string;
+  title: string;
+  caption: string;
+  imageUrl: string;
+  date: string;
+  admin_name?: string;
+}
+
 // Mock Data for the prototype
-const MOCK_POSTS = [
+const MOCK_POSTS: Post[] = [
   {
     id: "post-1",
     title: "Project Alpha: Prototype 1",
     caption: "First successful telemetry read from the custom ESP32 board! Looking solid.",
     imageUrl: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&q=80&w=800",
     date: "2026-03-31",
+    admin_name: "Original Admin"
   },
   {
     id: "post-2",
@@ -20,13 +30,14 @@ const MOCK_POSTS = [
     caption: "Just calibrated the new resin printers. Ready to mass produce the new micro-drone chassis.",
     imageUrl: "https://images.unsplash.com/photo-1620822606622-c2e9de6d4f6d?auto=format&fit=crop&q=80&w=800",
     date: "2026-03-29",
+    admin_name: "Original Admin"
   }
 ];
 
 import Sidebar from "@/components/Sidebar";
 
 export default function PostsDashboard() {
-  const [posts, setPosts] = useState(MOCK_POSTS);
+  const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
   const [isUploading, setIsUploading] = useState(false);
 
   // Form state
@@ -60,7 +71,8 @@ export default function PostsDashboard() {
     if(!title || !caption || !imagePreview) return;
     
     setIsUploading(true);
-    
+    const adminName = localStorage.getItem('adminName') || "Admin";
+
     // Simulate upload delay
     setTimeout(() => {
       const newPost = {
@@ -68,7 +80,8 @@ export default function PostsDashboard() {
         title,
         caption,
         imageUrl: imagePreview, // Use the local object URL
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        admin_name: adminName
       };
       
       setPosts([newPost, ...posts]);
@@ -217,7 +230,10 @@ export default function PostsDashboard() {
                       <div className="inline-block px-3 py-1 bg-black/50 backdrop-blur-md rounded-full border border-white/10 text-[10px] font-bold tracking-widest text-indigo-400 mb-4 uppercase shadow-xl">
                         {post.date}
                       </div>
-                      <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-indigo-300 transition-colors">{post.title}</h3>
+                      <h3 className="text-xl font-bold mb-1 tracking-tight group-hover:text-indigo-300 transition-colors">{post.title}</h3>
+                      {post.admin_name && (
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-3">Broadcast: {post.admin_name}</p>
+                      )}
                       <p className="text-gray-400 text-sm leading-relaxed font-light">
                         {post.caption}
                       </p>

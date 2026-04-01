@@ -129,6 +129,35 @@ alter table components disable row level security;
 alter table payment_config disable row level security;
 alter table payments disable row level security;
 
+-- 11. Admins Table (Admin profiles for identifying who does what)
+create table if not exists admins (
+  id uuid primary key default gen_random_uuid(),
+  full_name text not null,
+  email text not null unique,
+  role text default 'admin',
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- 12. Messages Table (Live Team Chat)
+create table if not exists messages (
+  id uuid default gen_random_uuid() primary key,
+  team_id uuid references teams(id) on delete cascade not null,
+  sender_id text not null,
+  sender_name text not null,
+  content text not null,
+  is_admin boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Features: Track who authorized or created items
+alter table tasks add column if not exists admin_name text;
+alter table events add column if not exists admin_name text;
+alter table posts add column if not exists admin_name text;
+alter table teams add column if not exists admin_name text;
+
+alter table admins disable row level security;
+alter table messages disable row level security;
+
 -- --------------------------------------------------------
 -- QUICK ALTER SCRIPT (if database already exists):
 -- Run only these if you already have the old tables:
@@ -137,7 +166,12 @@ alter table payments disable row level security;
 -- create table if not exists components (id uuid default gen_random_uuid() primary key, name text not null, description text, image_url text, buy_link text not null, price text, category text default 'other', created_at timestamp with time zone default timezone('utc'::text, now()) not null);
 -- create table if not exists payment_config (id uuid default gen_random_uuid() primary key, qr_url text, upi_id text not null, updated_at timestamp with time zone default timezone('utc'::text, now()) not null);
 -- create table if not exists payments (id uuid default gen_random_uuid() primary key, member_id uuid references applications(id) on delete cascade not null, amount numeric(10,2) not null, utr text, note text, status text default 'pending', created_at timestamp with time zone default timezone('utc'::text, now()) not null);
--- alter table components disable row level security;
--- alter table payment_config disable row level security;
--- alter table payments disable row level security;
+-- create table if not exists admins (id uuid primary key default gen_random_uuid(), full_name text not null, email text not null unique, role text default 'admin', created_at timestamp with time zone default timezone('utc'::text, now()) not null);
+-- create table if not exists messages (id uuid default gen_random_uuid() primary key, team_id uuid references teams(id) on delete cascade not null, sender_id text not null, sender_name text not null, content text not null, is_admin boolean default false, created_at timestamp with time zone default timezone('utc'::text, now()) not null);
+-- alter table tasks add column if not exists admin_name text;
+-- alter table events add column if not exists admin_name text;
+-- alter table posts add column if not exists admin_name text;
+-- alter table teams add column if not exists admin_name text;
+-- alter table admins disable row level security;
+-- alter table messages disable row level security;
 -- --------------------------------------------------------

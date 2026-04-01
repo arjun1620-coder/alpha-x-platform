@@ -120,9 +120,15 @@ export default function TeamsDashboard() {
     e.preventDefault();
     if (!newTaskTitle || !selectedTeamId) return;
 
+    const adminName = localStorage.getItem('adminName') || "Admin";
+
     await supabase
       .from('tasks')
-      .insert({ team_id: selectedTeamId, title: newTaskTitle });
+      .insert({ 
+        team_id: selectedTeamId, 
+        title: newTaskTitle,
+        admin_name: adminName
+      });
     
     setNewTaskTitle("");
     fetchData();
@@ -370,9 +376,16 @@ export default function TeamsDashboard() {
                                    <Circle className="w-5 h-5 text-gray-600" />
                                  )}
                                </button>
-                               <span className={`text-sm ${task.status === 'completed' ? 'text-gray-500 line-through' : 'text-white'}`}>
-                                 {task.title}
-                               </span>
+                               <div className="flex flex-col">
+                                 <span className={`text-sm ${task.status === 'completed' ? 'text-gray-500 line-through' : 'text-white'}`}>
+                                   {task.title}
+                                 </span>
+                                 {task.admin_name && (
+                                   <span className="text-[10px] text-gray-600 font-bold uppercase tracking-tighter mt-1">
+                                      Assigned by: {task.admin_name}
+                                   </span>
+                                 )}
+                               </div>
                              </div>
                              {userRole === 'admin' && (
                              <button onClick={() => handleDeleteTask(task.id)} className="opacity-0 group-hover:opacity-100 text-gray-600 hover:text-red-400 p-2 transition-all">
