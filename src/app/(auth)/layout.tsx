@@ -22,11 +22,16 @@ export default function AuthLayout({
         const userRole = localStorage.getItem('userRole');
         
         // Allow if there's a Supabase session (Admin) OR a member role
-        if (!session && userRole !== 'member') {
+        if (session) {
+          localStorage.setItem('userRole', 'admin');
+        }
+
+        const userRoleMap = localStorage.getItem('userRole'); // Re-read after potential update
+        if (!session && userRoleMap !== 'member') {
           if (isMounted) router.push("/login?error=Unauthorized%20Access");
         } else if (isMounted) {
           // If member is trying to access applications or posts (admin only), redirect them
-          if (userRole === 'member' && (pathname.includes('/applications') || pathname.includes('/posts'))) {
+          if (userRoleMap === 'member' && (pathname.includes('/applications') || pathname.includes('/posts'))) {
             router.push('/dashboard/teams');
           } else {
             setIsLoading(false);
