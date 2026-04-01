@@ -36,20 +36,29 @@ export default function TeamsDashboard() {
   const fetchData = async () => {
     setIsLoading(true);
     // Fetch Teams with their nested tasks and members
-    const { data: dbTeams } = await supabase
+    const { data: dbTeams, error: teamsError } = await supabase
       .from('teams')
       .select(`
         *,
         tasks (*),
-        members:applications (*)
+        members:applications!team_id (*)
       `)
       .order('created_at', { ascending: false });
 
+    if (teamsError) {
+      console.error("Critical: Teams retrieval offline:", teamsError);
+      alert(`Synchronizer Error: ${teamsError.message}`);
+    }
+
     // Fetch all approved applications
-    const { data: dbApproved } = await supabase
+    const { data: dbApproved, error: approvedError } = await supabase
       .from('applications')
       .select('*')
       .eq('status', 'approved');
+
+    if (approvedError) {
+      console.error("Approved members fetch failed:", approvedError);
+    }
 
     if (dbTeams) setTeams(dbTeams);
     if (dbApproved) setAvailableMembers(dbApproved);
@@ -71,12 +80,20 @@ export default function TeamsDashboard() {
     if (!newTeamName) return;
     setIsCreatingTeam(true);
     
-    const { data } = await supabase
+    const adminName = localStorage.getItem('adminName') || "Admin";
+
+    const { data, error } = await supabase
       .from('teams')
-      .insert({ name: newTeamName })
+      .insert({ 
+        name: newTeamName,
+        admin_name: adminName
+      })
       .select();
 
-    if (data && data.length > 0) {
+    if (error) {
+      console.error("Team creation failed:", error);
+      alert(`Quantum destabilization in team creation: ${error.message}`);
+    } else if (data && data.length > 0) {
       setNewTeamName("");
       setSelectedTeamId(data[0].id);
       await fetchData();
