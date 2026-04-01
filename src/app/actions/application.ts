@@ -8,6 +8,7 @@ export async function submitApplication(formData: FormData) {
   const data = {
     full_name: formData.get('full_name') as string,
     email: formData.get('email') as string,
+    mobile_number: formData.get('mobile_number') as string,
     college: formData.get('college') as string,
     department: formData.get('department') as string,
     year_of_study: formData.get('year_of_study') as string,

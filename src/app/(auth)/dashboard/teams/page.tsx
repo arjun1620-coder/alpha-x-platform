@@ -137,13 +137,13 @@ export default function TeamsDashboard() {
   const selectedTeam = teams.find(t => t.id === selectedTeamId);
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
         {/* Simplified Admin Sidebar */}
         <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
               <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
             </div>
             <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
@@ -157,7 +157,7 @@ export default function TeamsDashboard() {
                 <Users className="w-5 h-5" /> Applications
               </Link>
             )}
-            <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]">
               <Network className="w-5 h-5" /> Teams
             </Link>
             <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
@@ -190,7 +190,7 @@ export default function TeamsDashboard() {
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
-              <Network className="w-8 h-8 text-emerald-500" />
+              <Network className="w-8 h-8 text-indigo-500" />
               Team Assembly Matrix
             </h1>
             <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
@@ -204,7 +204,7 @@ export default function TeamsDashboard() {
             <div className="lg:col-span-4 flex flex-col gap-6">
               
               <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-6 backdrop-blur-sm shadow-xl flex flex-col h-full">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-400 mb-6 flex justify-between items-center">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-6 flex justify-between items-center">
                   Active Teams
                 </h2>
 
@@ -216,9 +216,9 @@ export default function TeamsDashboard() {
                     placeholder="New Team Name"
                     value={newTeamName}
                     onChange={(e) => setNewTeamName(e.target.value)}
-                    className="flex-1 bg-[#030712] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all shadow-inner"
+                    className="flex-1 bg-[#030712] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner"
                   />
-                  <button type="submit" disabled={isCreatingTeam} className="bg-emerald-500 text-black px-3 rounded-xl hover:bg-emerald-400 transition-all">
+                  <button type="submit" disabled={isCreatingTeam} className="bg-indigo-500 text-black px-3 rounded-xl hover:bg-indigo-400 transition-all">
                     <Plus className="w-5 h-5" />
                   </button>
                 </form>
@@ -226,7 +226,7 @@ export default function TeamsDashboard() {
 
                 {isLoading ? (
                   <div className="flex-1 flex justify-center py-20">
-                    <Loader2 className="w-6 h-6 animate-spin text-emerald-500" />
+                    <Loader2 className="w-6 h-6 animate-spin text-indigo-500" />
                   </div>
                 ) : (
                   <div className="space-y-3 overflow-y-auto flex-1 pr-2">
@@ -234,17 +234,17 @@ export default function TeamsDashboard() {
                       <div 
                         key={team.id}
                         onClick={() => setSelectedTeamId(team.id)}
-                        className={`bg-[#030712] border ${selectedTeamId === team.id ? 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-500/5' : 'border-white/5 hover:border-white/20'} rounded-xl p-4 flex items-center justify-between cursor-pointer group transition-all`}
+                        className={`bg-[#030712] border ${selectedTeamId === team.id ? 'border-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.15)] bg-indigo-500/5' : 'border-white/5 hover:border-white/20'} rounded-xl p-4 flex items-center justify-between cursor-pointer group transition-all`}
                       >
                         <div>
                           <h3 className="font-bold text-white text-sm mb-1">{team.name}</h3>
                           <div className="flex items-center gap-3 text-xs font-semibold tracking-wider uppercase">
-                            <span className="text-teal-400">{team.members?.length || 0} Members</span>
+                            <span className="text-slate-400">{team.members?.length || 0} Members</span>
                             <span className="text-gray-600">•</span>
-                            <span className="text-emerald-500 opacity-60">{team.tasks?.filter((t:any)=>t.status==='completed').length || 0}/{team.tasks?.length || 0} Tasks</span>
+                            <span className="text-indigo-500 opacity-60">{team.tasks?.filter((t:any)=>t.status==='completed').length || 0}/{team.tasks?.length || 0} Tasks</span>
                           </div>
                         </div>
-                        <ChevronRight className={`w-5 h-5 ${selectedTeamId === team.id ? 'text-emerald-500' : 'text-gray-600'} group-hover:translate-x-1 transition-transform`} />
+                        <ChevronRight className={`w-5 h-5 ${selectedTeamId === team.id ? 'text-indigo-500' : 'text-gray-600'} group-hover:translate-x-1 transition-transform`} />
                       </div>
                     ))}
                     {teams.length === 0 && (
@@ -283,7 +283,7 @@ export default function TeamsDashboard() {
                     
                     {/* Left Pane: Roster & Members */}
                     <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-sm shadow-xl flex flex-col">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-emerald-400 mb-6 flex items-center gap-2">
+                      <h3 className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-6 flex items-center gap-2">
                         <Users className="w-4 h-4" /> Team Roster ({selectedTeam.members?.length || 0})
                       </h3>
 
@@ -305,7 +305,7 @@ export default function TeamsDashboard() {
                           <button 
                             type="submit" 
                             disabled={!selectedNewMember} 
-                            className="bg-emerald-500 text-black px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all disabled:opacity-50 hover:bg-emerald-400"
+                            className="bg-indigo-500 text-black px-4 py-2 rounded-lg text-xs font-bold uppercase transition-all disabled:opacity-50 hover:bg-indigo-400"
                           >
                             Add
                           </button>
@@ -316,12 +316,12 @@ export default function TeamsDashboard() {
                         {selectedTeam.members?.map((member: any) => (
                           <div key={member.id} className="bg-[#030712] border border-white/5 rounded-xl p-4 flex items-center justify-between group hover:border-white/10 transition-colors">
                             <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center font-bold text-emerald-400 text-xs shadow-inner uppercase">
+                              <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center font-bold text-indigo-400 text-xs shadow-inner uppercase">
                                 {member.full_name?.substring(0,2) || "??"}
                               </div>
                               <div>
                                 <h4 className="font-bold text-sm text-white">{member.full_name || "Operative"}</h4>
-                                <p className="text-xs text-teal-400">{(member.skills || []).slice(0,2).join(", ")}</p>
+                                <p className="text-xs text-slate-400">{(member.skills || []).slice(0,2).join(", ")}</p>
                               </div>
                             </div>
                             {userRole === 'admin' && (
@@ -341,7 +341,7 @@ export default function TeamsDashboard() {
 
                     {/* Right Pane: Tasks */}
                     <div className="bg-white/[0.02] border border-white/10 rounded-3xl p-6 backdrop-blur-sm shadow-xl flex flex-col">
-                      <h3 className="text-sm font-bold uppercase tracking-widest text-emerald-400 mb-6 flex items-center gap-2">
+                      <h3 className="text-sm font-bold uppercase tracking-widest text-indigo-400 mb-6 flex items-center gap-2">
                         <Target className="w-4 h-4" /> Task Directives
                       </h3>
 
@@ -353,9 +353,9 @@ export default function TeamsDashboard() {
                           placeholder="Assign new task..."
                           value={newTaskTitle}
                           onChange={(e) => setNewTaskTitle(e.target.value)}
-                          className="flex-1 bg-[#030712] border border-white/10 rounded-xl pl-4 pr-4 py-3 text-sm text-white focus:outline-none focus:border-emerald-500 transition-all shadow-inner"
+                          className="flex-1 bg-[#030712] border border-white/10 rounded-xl pl-4 pr-4 py-3 text-sm text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner"
                         />
-                        <button type="submit" disabled={!newTaskTitle} className="bg-white/5 text-white border border-white/10 px-4 rounded-xl hover:bg-emerald-500 hover:text-black font-bold uppercase tracking-wider text-xs transition-all disabled:opacity-50">
+                        <button type="submit" disabled={!newTaskTitle} className="bg-white/5 text-white border border-white/10 px-4 rounded-xl hover:bg-indigo-500 hover:text-black font-bold uppercase tracking-wider text-xs transition-all disabled:opacity-50">
                           Add
                         </button>
                       </form>
@@ -374,7 +374,7 @@ export default function TeamsDashboard() {
                              <div className="flex items-center gap-3">
                                <button onClick={() => userRole === 'admin' && handleToggleTaskStatus(task.id, task.status)} className={`p-1 ${userRole === 'admin' ? 'hover:bg-white/5 cursor-pointer' : 'cursor-default'} rounded-full transition-colors flex-shrink-0`}>
                                  {task.status === 'completed' ? (
-                                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                                   <CheckCircle2 className="w-5 h-5 text-indigo-500" />
                                  ) : (
                                    <Circle className="w-5 h-5 text-gray-600" />
                                  )}

@@ -78,13 +78,13 @@ export default function PostsDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
         {/* Simplified Admin Sidebar */}
         <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.4)]">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center shadow-[0_0_15px_rgba(99,102,241,0.4)]">
               <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
             </div>
             <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
@@ -105,7 +105,7 @@ export default function PostsDashboard() {
               <Calendar className="w-5 h-5" />
               Announcements
             </Link>
-            <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]">
               <Activity className="w-5 h-5" />
               Post Management
             </Link>
@@ -131,7 +131,7 @@ export default function PostsDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
             <div>
               <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <Activity className="w-8 h-8 text-emerald-500" />
+                <Activity className="w-8 h-8 text-indigo-500" />
                 Post Management
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
@@ -144,7 +144,7 @@ export default function PostsDashboard() {
             {/* New Post Form */}
             <div className="xl:col-span-1">
               <div className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-sm shadow-2xl sticky top-8">
-                <h2 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white/5 pb-5 text-emerald-400 uppercase tracking-widest text-sm">
+                <h2 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white/5 pb-5 text-indigo-400 uppercase tracking-widest text-sm">
                   <PlusSquare className="w-5 h-5" />
                   New Post
                 </h2>
@@ -166,13 +166,13 @@ export default function PostsDashboard() {
                     {!imagePreview ? (
                       <div 
                         onClick={() => fileInputRef.current?.click()}
-                        className="w-full h-48 border-2 border-dashed border-white/10 hover:border-emerald-500/50 rounded-2xl bg-[#030712]/50 flex flex-col items-center justify-center text-gray-500 cursor-pointer transition-colors group shadow-inner"
+                        className="w-full h-48 border-2 border-dashed border-white/10 hover:border-indigo-500/50 rounded-2xl bg-[#030712]/50 flex flex-col items-center justify-center text-gray-500 cursor-pointer transition-colors group shadow-inner"
                       >
-                        <ImageIcon className="w-10 h-10 mb-3 group-hover:text-emerald-400 transition-colors" />
+                        <ImageIcon className="w-10 h-10 mb-3 group-hover:text-indigo-400 transition-colors" />
                         <span className="text-xs font-medium">Click here to browse image</span>
                       </div>
                     ) : (
-                      <div className="relative w-full h-48 rounded-2xl overflow-hidden group border border-emerald-500/30">
+                      <div className="relative w-full h-48 rounded-2xl overflow-hidden group border border-indigo-500/30">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                         <button 
@@ -195,7 +195,7 @@ export default function PostsDashboard() {
                       id="title"
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
-                      className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                      className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                       placeholder="e.g. Drone Test #4"
                     />
                   </div>
@@ -208,7 +208,7 @@ export default function PostsDashboard() {
                       rows={4}
                       value={caption}
                       onChange={(e) => setCaption(e.target.value)}
-                      className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all resize-none shadow-inner"
+                      className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-3.5 text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-none shadow-inner"
                       placeholder="Share the details..."
                     ></textarea>
                   </div>
@@ -216,7 +216,7 @@ export default function PostsDashboard() {
                   <button 
                     type="submit"
                     disabled={isUploading || !title || !caption || !imagePreview}
-                    className="w-full flex items-center justify-center gap-3 py-4 mt-4 bg-emerald-500 text-black rounded-xl font-black tracking-wide hover:bg-emerald-400 disabled:opacity-50 transition-all hover:shadow-[0_0_25px_rgba(16,185,129,0.4)] active:scale-95 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-3 py-4 mt-4 bg-indigo-500 text-black rounded-xl font-black tracking-wide hover:bg-indigo-400 disabled:opacity-50 transition-all hover:shadow-[0_0_25px_rgba(99,102,241,0.4)] active:scale-95 disabled:cursor-not-allowed"
                   >
                     {isUploading ? "UPLOADING POST..." : (
                       <>
@@ -233,7 +233,7 @@ export default function PostsDashboard() {
             <div className="xl:col-span-2">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {posts.map((post) => (
-                  <div key={post.id} className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden group hover:border-emerald-500/30 transition-all duration-300 shadow-xl relative backdrop-blur-sm">
+                  <div key={post.id} className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden group hover:border-indigo-500/30 transition-all duration-300 shadow-xl relative backdrop-blur-sm">
                     <button 
                       onClick={() => handleDelete(post.id)}
                       className="absolute top-4 right-4 z-20 p-3 bg-black/50 backdrop-blur-md rounded-full text-white/50 hover:text-red-400 hover:bg-red-900/30 border border-white/10 hover:border-red-500/30 transition-all opacity-0 group-hover:opacity-100 shadow-xl hover:scale-110 active:scale-95"
@@ -253,10 +253,10 @@ export default function PostsDashboard() {
                     </div>
                     
                     <div className="p-6 relative z-10 -mt-10">
-                      <div className="inline-block px-3 py-1 bg-black/50 backdrop-blur-md rounded-full border border-white/10 text-[10px] font-bold tracking-widest text-emerald-400 mb-4 uppercase shadow-xl">
+                      <div className="inline-block px-3 py-1 bg-black/50 backdrop-blur-md rounded-full border border-white/10 text-[10px] font-bold tracking-widest text-indigo-400 mb-4 uppercase shadow-xl">
                         {post.date}
                       </div>
-                      <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-emerald-300 transition-colors">{post.title}</h3>
+                      <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-indigo-300 transition-colors">{post.title}</h3>
                       <p className="text-gray-400 text-sm leading-relaxed font-light">
                         {post.caption}
                       </p>

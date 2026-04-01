@@ -61,7 +61,7 @@ export default function ResourceLibrary() {
 
   const getIcon = (type: string) => {
     switch(type) {
-      case "snippet": return <FileCode2 className="w-8 h-8 text-teal-400" />;
+      case "snippet": return <FileCode2 className="w-8 h-8 text-slate-400" />;
       case "3d_model": return <Box className="w-8 h-8 text-purple-400" />;
       case "datasheet": return <FileText className="w-8 h-8 text-green-400" />;
       default: return <Database className="w-8 h-8 text-gray-400" />;
@@ -70,7 +70,7 @@ export default function ResourceLibrary() {
 
   const getBadgeClass = (type: string) => {
     switch(type) {
-      case "snippet": return "bg-teal-500/10 text-teal-400 border-teal-500/20";
+      case "snippet": return "bg-slate-500/10 text-slate-400 border-slate-500/20";
       case "3d_model": return "bg-purple-500/10 text-purple-400 border-purple-500/20";
       case "datasheet": return "bg-green-500/10 text-green-400 border-green-500/20";
       default: return "bg-gray-500/10 text-gray-400 border-gray-500/20";
@@ -87,13 +87,13 @@ export default function ResourceLibrary() {
   };
 
   return (
-    <div className="min-h-screen bg-[#030712] text-white selection:bg-emerald-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-[#030712] text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
         {/* Main Content Area */}
         <div className="flex-1 overflow-auto p-6 md:p-12 relative z-10 w-full max-w-7xl mx-auto flex flex-col">
           
-          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors mb-8 font-medium self-start">
+          <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-indigo-400 transition-colors mb-8 font-medium self-start">
             <ArrowLeft className="w-4 h-4" />
             Back to Base
           </Link>
@@ -102,8 +102,8 @@ export default function ResourceLibrary() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div>
               <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-4 flex items-center gap-4">
-                <Database className="w-10 h-10 text-emerald-500" />
-                CENTRAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">LIBRARY</span>
+                <Database className="w-10 h-10 text-indigo-500" />
+                CENTRAL <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-500">LIBRARY</span>
               </h1>
               <p className="text-gray-400 max-w-2xl text-lg leading-relaxed">
                 The private repository for internal members. Access, download, and share proprietary codebases, 3D printing assets, and hardware specs.
@@ -125,7 +125,7 @@ export default function ResourceLibrary() {
                   onClick={() => setActiveFilter(filter)}
                   className={`px-5 py-2.5 rounded-xl text-sm font-bold tracking-wide uppercase transition-all whitespace-nowrap ${
                     activeFilter === filter 
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                      ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]'
                       : 'text-gray-400 hover:text-white hover:bg-white/5 border border-transparent'
                   }`}
                 >
@@ -143,7 +143,7 @@ export default function ResourceLibrary() {
                 placeholder="Search database..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#030712] border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                className="w-full bg-[#030712] border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function ResourceLibrary() {
           {/* Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
             {filteredResources.map(resource => (
-              <div key={resource.id} className="bg-[#080d1a] border border-white/5 rounded-3xl p-6 hover:border-emerald-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] group flex flex-col justify-between shadow-lg">
+              <div key={resource.id} className="bg-[#080d1a] border border-white/5 rounded-3xl p-6 hover:border-indigo-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(99,102,241,0.1)] group flex flex-col justify-between shadow-lg">
                 <div>
                   <div className="flex items-start justify-between mb-6">
                     <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform duration-300">
@@ -162,7 +162,7 @@ export default function ResourceLibrary() {
                     </span>
                   </div>
                   
-                  <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-emerald-300 transition-colors">{resource.title}</h3>
+                  <h3 className="text-xl font-bold mb-3 tracking-tight group-hover:text-indigo-300 transition-colors">{resource.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-6 font-light">
                     {resource.description}
                   </p>
@@ -172,7 +172,7 @@ export default function ResourceLibrary() {
                   <div className="text-xs text-gray-500 font-medium">
                     {resource.size} • {resource.date}
                   </div>
-                  <button className="p-2.5 rounded-xl bg-white/5 text-gray-300 border border-white/10 hover:bg-emerald-500 hover:text-black hover:border-emerald-400 transition-all group-hover:shadow-[0_0_15px_rgba(16,185,129,0.4)] hover:scale-105 active:scale-95" title="Download Resource">
+                  <button className="p-2.5 rounded-xl bg-white/5 text-gray-300 border border-white/10 hover:bg-indigo-500 hover:text-black hover:border-indigo-400 transition-all group-hover:shadow-[0_0_15px_rgba(99,102,241,0.4)] hover:scale-105 active:scale-95" title="Download Resource">
                     <Download className="w-4 h-4" />
                   </button>
                 </div>

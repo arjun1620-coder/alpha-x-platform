@@ -74,13 +74,13 @@ export default function ApplicationsDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
         {/* Simplified Admin Sidebar */}
         <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
               <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
             </div>
             <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
@@ -89,7 +89,7 @@ export default function ApplicationsDashboard() {
           </div>
 
           <nav className="space-y-2 flex-1">
-            <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]">
               <Users className="w-5 h-5" />
               Applications
             </Link>
@@ -127,7 +127,7 @@ export default function ApplicationsDashboard() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
             <div>
               <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <Shield className="w-8 h-8 text-emerald-500" />
+                <Shield className="w-8 h-8 text-indigo-500" />
                 Applications
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
@@ -144,7 +144,7 @@ export default function ApplicationsDashboard() {
                 placeholder="Search candidates / skills..." 
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#030712] border border-white/10 rounded-full pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                className="w-full bg-[#030712] border border-white/10 rounded-full pl-11 pr-4 py-2.5 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
               />
             </div>
           </div>
@@ -153,7 +153,7 @@ export default function ApplicationsDashboard() {
           <div className="bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl min-h-[50vh]">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center p-20 h-full">
-                <Loader2 className="w-10 h-10 text-emerald-500 animate-spin mb-4" />
+                <Loader2 className="w-10 h-10 text-indigo-500 animate-spin mb-4" />
                 <p className="text-gray-400 font-medium">Loading applications...</p>
               </div>
             ) : (
@@ -179,7 +179,7 @@ export default function ApplicationsDashboard() {
                       <tr key={app.id} className="hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-5">
                           <div className="font-bold text-white text-base">{app.full_name}</div>
-                          <div className="text-emerald-400 font-medium text-xs mt-1">{app.email}</div>
+                          <div className="text-indigo-400 font-medium text-xs mt-1">{app.email}</div>
                           <div className="text-gray-500 text-[10px] mt-1 break-all max-w-[150px] truncate" title="This is the user's login password.">
                             Password / ID: {app.id}
                           </div>
@@ -221,7 +221,7 @@ export default function ApplicationsDashboard() {
                               </button>
                               <button 
                                 onClick={() => handleAction(app.id, 'approved')}
-                                className="p-2 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-400/10 rounded-lg border border-emerald-500/30 transition-all shadow-[0_0_15px_rgba(16,185,129,0.15)] hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95"
+                                className="p-2 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-400/10 rounded-lg border border-indigo-500/30 transition-all shadow-[0_0_15px_rgba(99,102,241,0.15)] hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-105 active:scale-95"
                                 title="Approve"
                               >
                                 <CheckCircle2 className="w-5 h-5" />

@@ -77,18 +77,18 @@ export default function EventsDashboard() {
       case 'competition': return 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10';
       case 'deadline': return 'text-red-400 border-red-500/30 bg-red-500/10';
       case 'event': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
-      default: return 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10';
+      default: return 'text-indigo-400 border-indigo-500/30 bg-indigo-500/10';
     }
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
         {/* Simplified Admin Sidebar */}
         <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
           <div className="flex items-center gap-3 mb-12">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-teal-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
               <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
             </div>
             <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
@@ -105,7 +105,7 @@ export default function EventsDashboard() {
             <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
               <Network className="w-5 h-5" /> Teams
             </Link>
-            <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+            <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]">
               <Calendar className="w-5 h-5" /> Announcements
             </Link>
             {userRole === 'admin' && (
@@ -134,7 +134,7 @@ export default function EventsDashboard() {
           <div className="flex flex-col md:flex-row gap-8 mb-12">
             <div>
               <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
-                <Calendar className="w-8 h-8 text-emerald-500" />
+                <Calendar className="w-8 h-8 text-indigo-500" />
                 Operations & Events Ledger
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
@@ -148,29 +148,29 @@ export default function EventsDashboard() {
             {/* Publisher Form */}
             {userRole === 'admin' && (
             <div className="lg:col-span-4 bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-sm shadow-2xl sticky top-8">
-              <h2 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white/5 pb-5 text-emerald-400 uppercase tracking-widest text-sm">
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-3 border-b border-white/5 pb-5 text-indigo-400 uppercase tracking-widest text-sm">
                 <PlusSquare className="w-5 h-5" /> New Broadcast
               </h2>
               
               <form onSubmit={handleCreateEvent} className="space-y-5">
                 <div className="space-y-2">
                   <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Title *</label>
-                  <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-emerald-500 transition-all shadow-inner" placeholder="e.g. HackMIT Registration" />
+                  <input required type="text" value={title} onChange={(e) => setTitle(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500 transition-all shadow-inner" placeholder="e.g. HackMIT Registration" />
                 </div>
                 
                 <div className="space-y-2">
                   <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Description *</label>
-                  <textarea required rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-emerald-500 transition-all resize-none shadow-inner" placeholder="Provide link or details here..." />
+                  <textarea required rows={3} value={description} onChange={(e) => setDescription(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-indigo-500 transition-all resize-none shadow-inner" placeholder="Provide link or details here..." />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Date/Deadline *</label>
-                  <input required type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all shadow-inner color-scheme-dark" style={{colorScheme: 'dark'}} />
+                  <input required type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner color-scheme-dark" style={{colorScheme: 'dark'}} />
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Category *</label>
-                  <select required value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-emerald-500 transition-all shadow-inner appearance-none">
+                  <select required value={category} onChange={(e) => setCategory(e.target.value)} className="w-full bg-[#030712] border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-all shadow-inner appearance-none">
                     <option value="announcement">Announcement</option>
                     <option value="competition">Competition</option>
                     <option value="deadline">Deadline</option>
@@ -178,7 +178,7 @@ export default function EventsDashboard() {
                   </select>
                 </div>
 
-                <button type="submit" disabled={isPublishing || !title || !description || !eventDate || !category} className="w-full flex items-center justify-center gap-3 py-4 mt-4 bg-emerald-500 text-black rounded-xl font-black tracking-wide hover:bg-emerald-400 disabled:opacity-50 transition-all active:scale-95">
+                <button type="submit" disabled={isPublishing || !title || !description || !eventDate || !category} className="w-full flex items-center justify-center gap-3 py-4 mt-4 bg-indigo-500 text-black rounded-xl font-black tracking-wide hover:bg-indigo-400 disabled:opacity-50 transition-all active:scale-95">
                   {isPublishing ? "TRANSMITTING..." : "BROADCAST TO NETWORK"}
                 </button>
               </form>
@@ -188,7 +188,7 @@ export default function EventsDashboard() {
             {/* Event List */}
             <div className={`${userRole === 'admin' ? 'lg:col-span-8' : 'lg:col-span-12'} flex flex-col gap-4`}>
               {isLoading ? (
-                <div className="flex justify-center p-20"><Loader2 className="w-10 h-10 text-emerald-500 animate-spin" /></div>
+                <div className="flex justify-center p-20"><Loader2 className="w-10 h-10 text-indigo-500 animate-spin" /></div>
               ) : events.length === 0 ? (
                 <div className="border border-white/5 border-dashed rounded-[2rem] p-16 flex flex-col items-center justify-center text-center bg-white/[0.02]">
                   <Calendar className="w-16 h-16 text-gray-700 mb-6" />
@@ -197,7 +197,7 @@ export default function EventsDashboard() {
                 </div>
               ) : (
                 events.map((ev) => (
-                  <div key={ev.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 group hover:border-emerald-500/30 transition-all duration-300 shadow-xl relative backdrop-blur-sm flex flex-col sm:flex-row gap-6 items-start">
+                  <div key={ev.id} className="bg-white/5 border border-white/10 rounded-3xl p-6 group hover:border-indigo-500/30 transition-all duration-300 shadow-xl relative backdrop-blur-sm flex flex-col sm:flex-row gap-6 items-start">
                     
                     {userRole === 'admin' && (
                     <button onClick={() => handleDelete(ev.id)} className="absolute top-4 right-4 z-20 p-2 text-white/30 hover:text-red-400 hover:bg-red-900/30 rounded-full transition-all opacity-0 group-hover:opacity-100">

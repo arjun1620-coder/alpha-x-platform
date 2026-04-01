@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
+import ProfileIcon from "@/components/ProfileIcon";
+
 export default function AuthLayout({
   children,
 }: {
@@ -64,12 +66,17 @@ export default function AuthLayout({
     return (
       <div className="min-h-screen bg-[#030712] flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-emerald-500 font-bold uppercase tracking-widest text-sm animate-pulse">Authenticating...</p>
+          <div className="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-indigo-500 font-bold uppercase tracking-widest text-sm animate-pulse">Authenticating...</p>
         </div>
       </div>
     );
   }
 
-  return <>{children}</>;
+  return (
+    <>
+      <ProfileIcon />
+      {children}
+    </>
+  );
 }

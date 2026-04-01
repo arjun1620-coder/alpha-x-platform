@@ -52,22 +52,22 @@ export default function JoinPage() {
   }
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative py-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative py-20 px-4 sm:px-6 lg:px-8">
       {/* Background gradients */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-emerald-900/10 blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-teal-900/10 blur-[120px]" />
+        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-slate-900/10 blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-4xl mx-auto">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors mb-12 font-medium">
+        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-indigo-400 transition-colors mb-12 font-medium">
           <ArrowLeft className="w-5 h-5" />
           Back to Home
         </Link>
         
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6">
-            JOIN <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-500">ALPHA X</span>
+            JOIN <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-500">ALPHA X</span>
           </h1>
           <p className="text-xl text-gray-400 font-light max-w-2xl leading-relaxed">
             We are searching for visionary engineers, programmers, and designers to help us architect the future. Submit your application to join our core development team.
@@ -75,9 +75,9 @@ export default function JoinPage() {
         </div>
 
         {isSuccess ? (
-          <div className="bg-white/5 border border-emerald-500/30 rounded-[2rem] p-12 text-center backdrop-blur-md shadow-[0_0_30px_rgba(16,185,129,0.1)] py-20">
-            <div className="w-24 h-24 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-500/30">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400" />
+          <div className="bg-white/5 border border-indigo-500/30 rounded-[2rem] p-12 text-center backdrop-blur-md shadow-[0_0_30px_rgba(99,102,241,0.1)] py-20">
+            <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-indigo-500/30">
+              <CheckCircle2 className="w-12 h-12 text-indigo-400" />
             </div>
             <h2 className="text-4xl font-bold mb-4 tracking-tight">Application Secured</h2>
             <p className="text-gray-400 max-w-md mx-auto mb-6 text-lg leading-relaxed">
@@ -85,8 +85,8 @@ export default function JoinPage() {
             </p>
             
             {applicantId && (
-              <div className="bg-[#030712] border border-emerald-500/50 rounded-xl p-6 mb-10 mx-auto max-w-sm">
-                <p className="text-xs text-emerald-400 font-bold tracking-widest uppercase mb-2">Your Secure Tracking ID</p>
+              <div className="bg-[#030712] border border-indigo-500/50 rounded-xl p-6 mb-10 mx-auto max-w-sm">
+                <p className="text-xs text-indigo-400 font-bold tracking-widest uppercase mb-2">Your Secure Tracking ID</p>
                 <div className="font-mono text-sm text-white bg-white/5 py-3 px-4 rounded-lg border border-white/10 break-all select-all">
                   {applicantId}
                 </div>
@@ -106,7 +106,7 @@ export default function JoinPage() {
               
               {/* Personal Info */}
               <div className="space-y-6 md:col-span-2">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-emerald-400 tracking-wide uppercase">01. Applicant Profile</h3>
+                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-indigo-400 tracking-wide uppercase">01. Applicant Profile</h3>
               </div>
 
               <div className="space-y-3 md:col-span-1">
@@ -116,7 +116,7 @@ export default function JoinPage() {
                   type="text" 
                   id="full_name" 
                   name="full_name" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                   placeholder="Ada Lovelace"
                 />
               </div>
@@ -128,8 +128,20 @@ export default function JoinPage() {
                   type="email" 
                   id="email" 
                   name="email" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                   placeholder="ada@mit.edu"
+                />
+              </div>
+
+              <div className="space-y-3 md:col-span-1">
+                <label htmlFor="mobile_number" className="text-sm font-semibold text-gray-300">Mobile Number *</label>
+                <input 
+                  required 
+                  type="tel" 
+                  id="mobile_number" 
+                  name="mobile_number" 
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
+                  placeholder="+1 (555) 000-0000"
                 />
               </div>
 
@@ -140,7 +152,7 @@ export default function JoinPage() {
                   type="text" 
                   id="college" 
                   name="college" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                   placeholder="MIT"
                 />
               </div>
@@ -152,7 +164,7 @@ export default function JoinPage() {
                   type="text" 
                   id="department" 
                   name="department" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                   placeholder="Mechatronics Engineering"
                 />
               </div>
@@ -165,7 +177,7 @@ export default function JoinPage() {
                     defaultValue=""
                     id="year_of_study" 
                     name="year_of_study" 
-                    className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all appearance-none cursor-pointer shadow-inner"
+                    className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none cursor-pointer shadow-inner"
                   >
                     <option value="" disabled>Select your current year...</option>
                     <option value="1">1st Year (Freshman)</option>
@@ -183,7 +195,7 @@ export default function JoinPage() {
 
               {/* Achievements */}
               <div className="space-y-6 md:col-span-2 pt-8">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-emerald-400 tracking-wide uppercase">02. Experience & Achievements</h3>
+                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-indigo-400 tracking-wide uppercase">02. Experience & Achievements</h3>
               </div>
 
               <div className="space-y-3 md:col-span-2">
@@ -193,14 +205,14 @@ export default function JoinPage() {
                   id="achievements" 
                   name="achievements" 
                   rows={5}
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all resize-y shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-y shadow-inner"
                   placeholder="e.g. Built a custom 6-axis robotic arm, won 1st place in National Hackathon, designed a telemetry board for a rocket..."
                 ></textarea>
               </div>
 
               {/* Tech Stack */}
               <div className="space-y-6 md:col-span-2 pt-8">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-emerald-400 tracking-wide uppercase">03. Technical Skills</h3>
+                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-indigo-400 tracking-wide uppercase">03. Technical Skills</h3>
                 <p className="text-sm text-gray-400 mb-5 leading-relaxed">Select the tools and skills you bring to the table. We evaluate these closely during our review process.</p>
                 <div className="flex flex-wrap gap-3">
                   {PREDEFINED_SKILLS.map((skill) => {
@@ -212,7 +224,7 @@ export default function JoinPage() {
                         onClick={() => toggleSkill(skill)}
                         className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
                           isSelected 
-                            ? 'bg-emerald-500/20 border-2 border-emerald-400 text-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.3)] scale-105' 
+                            ? 'bg-indigo-500/20 border-2 border-indigo-400 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] scale-105' 
                             : 'bg-[#030712] border-2 border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
                         }`}
                       >
@@ -234,7 +246,7 @@ export default function JoinPage() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting || selectedSkills.length === 0}
-                  className="w-full sm:w-auto group flex items-center justify-center gap-3 px-10 py-5 bg-emerald-500 text-black rounded-xl font-black text-lg hover:bg-emerald-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_25px_rgba(16,185,129,0.5)] active:scale-95"
+                  className="w-full sm:w-auto group flex items-center justify-center gap-3 px-10 py-5 bg-indigo-500 text-black rounded-xl font-black text-lg hover:bg-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] active:scale-95"
                 >
                   {isSubmitting ? (
                     <>

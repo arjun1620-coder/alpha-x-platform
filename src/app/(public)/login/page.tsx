@@ -38,7 +38,12 @@ export default function LoginPage() {
       .eq('status', 'approved')
       .single();
 
-    if (memberData && memberData.id.toString() === password) {
+    const matchesPassword = memberData && (
+      (memberData.password && memberData.password === password) || 
+      (!memberData.password && memberData.id.toString() === password)
+    );
+
+    if (matchesPassword) {
       localStorage.setItem('userRole', 'member');
       localStorage.setItem('memberData', JSON.stringify(memberData));
       window.location.href = "/dashboard/teams";
@@ -50,23 +55,23 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-transparent text-white selection:bg-emerald-500/30 overflow-hidden relative flex items-center justify-center p-4">
+    <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative flex items-center justify-center p-4">
       {/* Background gradients */}
       <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-emerald-900/10 blur-[120px]" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] rounded-full bg-teal-900/10 blur-[120px]" />
+        <div className="absolute top-[-20%] left-[-10%] w-[70vw] h-[70vw] rounded-full bg-indigo-900/10 blur-[120px]" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] rounded-full bg-slate-900/10 blur-[120px]" />
       </div>
 
       <div className="relative z-10 w-full max-w-md">
-        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-emerald-400 transition-colors mb-10 font-medium">
+        <Link href="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-indigo-400 transition-colors mb-10 font-medium">
           <ArrowLeft className="w-4 h-4" />
           Back to Home
         </Link>
         
         <div className="bg-[#080d1a]/80 border border-white/10 rounded-[2rem] p-8 sm:p-12 backdrop-blur-xl relative shadow-[0_0_50px_rgba(0,0,0,0.5)]">
           
-          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-[#030712] border border-white/10 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(16,185,129,0.2)]">
-            <Lock className="w-8 h-8 text-emerald-400" />
+          <div className="absolute -top-10 left-1/2 -translate-x-1/2 w-20 h-20 bg-[#030712] border border-white/10 rounded-full flex items-center justify-center shadow-[0_0_30px_rgba(99,102,241,0.2)]">
+            <Lock className="w-8 h-8 text-indigo-400" />
           </div>
 
           <div className="text-center mt-6 mb-10">
@@ -86,7 +91,7 @@ export default function LoginPage() {
                   type="email" 
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl pl-12 pr-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl pl-12 pr-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                   placeholder="agent@alphax.com"
                 />
               </div>
@@ -103,7 +108,7 @@ export default function LoginPage() {
                   type="password" 
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl pl-12 pr-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-emerald-500/50 focus:border-emerald-500 transition-all shadow-inner tracking-widest"
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl pl-12 pr-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner tracking-widest"
                   placeholder="••••••••••••"
                 />
               </div>
@@ -119,7 +124,7 @@ export default function LoginPage() {
               <button 
                 type="submit" 
                 disabled={isAuthenticating || !email || !password}
-                className="w-full flex items-center justify-center gap-3 py-4 bg-emerald-500 text-black rounded-xl font-black tracking-widest uppercase hover:bg-emerald-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(16,185,129,0.4)] active:scale-95"
+                className="w-full flex items-center justify-center gap-3 py-4 bg-indigo-500 text-black rounded-xl font-black tracking-widest uppercase hover:bg-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_30px_rgba(99,102,241,0.4)] active:scale-95"
               >
                 {isAuthenticating ? (
                   <>
@@ -139,7 +144,7 @@ export default function LoginPage() {
               Unauthorized access strictly monitored.
             </div>
             <p className="text-xs text-gray-600 mt-2">
-              Don't have an account yet? <Link href="/join" className="text-emerald-500 hover:text-emerald-400 hover:underline">Sign Up</Link>
+              Don't have an account yet? <Link href="/join" className="text-indigo-500 hover:text-indigo-400 hover:underline">Sign Up</Link>
             </p>
           </div>
         </div>
