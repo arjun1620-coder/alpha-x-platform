@@ -126,34 +126,36 @@ export default function ChatPage() {
           <div className="md:hidden h-20 flex-shrink-0" />
 
           {/* Chat Header */}
-          <div className="p-6 border-b border-white/5 bg-[#080d1a]/50 backdrop-blur-md flex flex-col lg:flex-row lg:items-center gap-6">
-            <div className="flex-1">
+          <div className="p-6 border-b border-white/5 bg-[#080d1a]/50 backdrop-blur-md flex flex-col lg:flex-row lg:items-end justify-between gap-6">
+            <div>
               <h1 className="text-2xl font-bold tracking-tight flex items-center gap-3">
                 <MessageSquare className="w-6 h-6 text-indigo-500" />
                 Team Transmissions
               </h1>
-              <div className="flex items-center gap-2 mt-1">
-                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                 <p className="text-xs text-gray-500 font-mono tracking-widest uppercase">Live Link: {selectedTeamName}</p>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-2">
+                 <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <p className="text-xs text-gray-500 font-mono tracking-widest uppercase truncate max-w-[200px]">Live Link: {selectedTeamName}</p>
+                 </div>
+
+                 {userRole === 'admin' && teams.length > 0 && (
+                    <div className="flex items-center gap-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl px-4 py-2 self-start">
+                      <Hash className="w-4 h-4 text-indigo-400" />
+                      <select 
+                        aria-label="Select Team Channel"
+                        title="Select Team Channel"
+                        value={selectedTeamId || ""} 
+                        onChange={(e) => setSelectedTeamId(e.target.value)}
+                        className="bg-transparent text-xs font-bold text-indigo-300 focus:outline-none appearance-none cursor-pointer pr-4 uppercase tracking-tighter"
+                      >
+                        {teams.map(team => (
+                          <option key={team.id} value={team.id} className="bg-slate-900">{team.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
               </div>
             </div>
-
-            {userRole === 'admin' && teams.length > 0 && (
-              <div className="flex items-center gap-3 bg-[#030712] border border-white/10 rounded-xl px-4 py-2 self-start lg:self-center mr-16 lg:mr-24">
-                <Hash className="w-4 h-4 text-gray-500" />
-                <select 
-                  aria-label="Select Team Channel"
-                  title="Select Team Channel"
-                  value={selectedTeamId || ""} 
-                  onChange={(e) => setSelectedTeamId(e.target.value)}
-                  className="bg-transparent text-sm text-white focus:outline-none appearance-none cursor-pointer pr-4"
-                >
-                  {teams.map(team => (
-                    <option key={team.id} value={team.id}>{team.name}</option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
 
           {/* Messages Area */}
