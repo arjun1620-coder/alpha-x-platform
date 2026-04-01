@@ -15,17 +15,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AlphaX Robotics",
   description: "Internal and public facing portal for AlphaX Robotics.",
-  manifest: "/manifest.v1.json",
-  themeColor: "#030712",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "AlphaX",
-  },
-  icons: {
-    apple: "/apple-touch-icon.png",
-  }
 };
 
 export default function RootLayout({

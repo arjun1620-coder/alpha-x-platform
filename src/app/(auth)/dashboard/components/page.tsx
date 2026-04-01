@@ -142,7 +142,7 @@ export default function ComponentsPage() {
                 Component Catalogue
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
-                Browse electronic components used in Alpha X projects. Click &quot;Buy&quot; to purchase directly from the supplier.
+                Browse electronic components used in AlphaX Robotics projects. Click &quot;Buy&quot; to purchase directly from the supplier.
               </p>
             </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User, Mail, Phone, Lock, Save, Loader2, X, Shield, Users } from "lucide-react";
+import { User, Mail, Phone, Lock, Save, Loader2, X, Shield, Users, LogOut, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function ProfileIcon() {
@@ -124,6 +124,29 @@ export default function ProfileIcon() {
      setIsUpdating(false);
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.clear();
+    window.location.href = "/login";
+  };
+
+  const handleLeaveAlphaX = async () => {
+    if (!confirm("Caution: Are you sure you want to LEAVE ALPHAX forever? This will permanently delete your member status and all your data. This action CANNOT be undone.")) return;
+    
+    setIsUpdating(true);
+    try {
+      if (userRole === 'member' && member?.id) {
+        const { error } = await supabase.from('applications').delete().eq('id', member.id);
+        if (error) throw error;
+      }
+      handleLogout();
+    } catch (err: any) {
+      console.error(err);
+      setMessage("ERROR: Termination sequence failed. Contact Lab Support.");
+      setIsUpdating(false);
+    }
+  };
+
   if (!userRole) return null;
 
   return (
@@ -242,15 +265,35 @@ export default function ProfileIcon() {
                    </div>
                  )}
 
-                 <button 
-                   type="submit" 
-                   disabled={isUpdating}
-                   className="w-full mt-4 flex items-center justify-center gap-2 bg-indigo-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-indigo-400 transition-all active:scale-95 disabled:opacity-50"
-                 >
-                   {isUpdating ? <Loader2 className="w-5 h-5 animate-spin"/> : <Save className="w-5 h-5" />}
-                   {isUpdating ? "TRANSFORMING..." : "SAVE SETTINGS"}
-                 </button>
-               </form>
+                  <button 
+                    type="submit" 
+                    disabled={isUpdating}
+                    className="w-full mt-4 flex items-center justify-center gap-2 bg-indigo-500 text-black py-4 rounded-xl font-black uppercase tracking-widest hover:bg-indigo-400 transition-all active:scale-95 disabled:opacity-50"
+                  >
+                    {isUpdating ? <Loader2 className="w-5 h-5 animate-spin"/> : <Save className="w-5 h-5" />}
+                    {isUpdating ? "TRANSFORMING..." : "SAVE SETTINGS"}
+                  </button>
+
+                  <div className="pt-6 border-t border-white/10 flex flex-col gap-3">
+                    <button 
+                      type="button" 
+                      onClick={handleLogout}
+                      className="w-full flex items-center justify-center gap-2 bg-slate-500/10 border border-slate-500/30 text-slate-300 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-500/20 transition-all"
+                    >
+                      <LogOut className="w-4 h-4" /> Sign Out
+                    </button>
+                    
+                    {userRole === 'member' && (
+                      <button 
+                        type="button" 
+                        onClick={handleLeaveAlphaX}
+                        className="w-full flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/30 text-red-500 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-500/20 transition-all"
+                      >
+                        <Trash2 className="w-4 h-4" /> Leave AlphaX
+                      </button>
+                    )}
+                  </div>
+                </form>
             </div>
          </div>
       )}

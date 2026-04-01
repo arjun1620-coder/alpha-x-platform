@@ -67,7 +67,7 @@ export default function JoinPage() {
         
         <div className="mb-12">
           <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6">
-            JOIN <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-500">ALPHA X</span>
+            JOIN <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-500">AlphaX Robotics</span>
           </h1>
           <p className="text-xl text-gray-400 font-light max-w-2xl leading-relaxed">
             We are searching for visionary engineers, programmers, and designers to help us architect the future. Submit your application to join our core development team.
@@ -241,7 +241,7 @@ export default function JoinPage() {
               {/* Submit */}
               <div className="md:col-span-2 pt-10 flex flex-col sm:flex-row items-center justify-between border-t border-white/10 mt-4 gap-6">
                 <p className="text-xs text-gray-500 max-w-sm">
-                  By submitting, you agree to Alpha X's confidentiality guidelines regarding internal hardware and codebases.
+                  By submitting, you agree to AlphaX Robotics's confidentiality guidelines regarding internal hardware and codebases.
                 </p>
                 <button 
                   type="submit" 

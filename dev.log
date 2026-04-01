@@ -1,0 +1,26 @@
+
+> alpha-x-platform@0.1.0 dev
+> next dev
+
+ΓÜá Port 3000 is in use by process 11000, using available port 3001 instead.
+Γû▓ Next.js 16.2.1 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://10.107.243.210:3001
+- Environments: .env.local
+Γ£ô Ready in 691ms
+ΓÜá Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of C:\Users\Lenovo\package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * C:\Users\Lenovo\AlpX\AlphaX Robotics\package-lock.json
+
+Γ¿» Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          11000
+- Dir:          C:\Users\Lenovo\AlpX\AlphaX Robotics
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 11000 /F to stop it.
+[?25h

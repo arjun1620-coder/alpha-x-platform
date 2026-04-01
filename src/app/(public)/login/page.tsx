@@ -76,7 +76,7 @@ export default function LoginPage() {
 
           <div className="text-center mt-6 mb-10">
             <h1 className="text-3xl font-black tracking-tighter mb-2 uppercase">Secure Login</h1>
-            <p className="text-sm text-gray-500 font-medium">Sign in to access the internal Alpha X dashboard.</p>
+            <p className="text-sm text-gray-500 font-medium">Sign in to access the internal AlphaX Robotics dashboard.</p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-6">

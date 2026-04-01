@@ -41,7 +41,7 @@ async function sendAnnouncementEmails(title: string, description: string, catego
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/dashboard/events" style="display:block;background:#6366f1;color:black;text-align:center;padding:14px;border-radius:12px;font-weight:900;font-size:13px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;">
                 View All Announcements →
               </a>
-              <p style="color:#334155;font-size:11px;text-align:center;margin-top:20px;">Alpha X Robotics Platform</p>
+              <p style="color:#334155;font-size:11px;text-align:center;margin-top:20px;">AlphaX Robotics Platform</p>
             </div>
           </div>
         </body>
@@ -53,7 +53,7 @@ async function sendAnnouncementEmails(title: string, description: string, catego
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           to: member.email,
-          subject: `📢 Alpha X Announcement: ${title}`,
+          subject: `📢 AlphaX Robotics Announcement: ${title}`,
           html,
         }),
       });

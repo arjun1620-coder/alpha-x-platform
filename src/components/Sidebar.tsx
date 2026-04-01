@@ -15,7 +15,6 @@ import {
   Menu, 
   X,
   MessageSquare,
-  Smartphone
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -23,28 +22,12 @@ export default function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
   const [isOpen, setIsOpen] = useState(false);
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
     setUserRole(role);
-
-    const handler = (e: any) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
   }, []);
-
-  const handleInstallClick = () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(() => setDeferredPrompt(null));
-    } else {
-      alert("To install: Open your browser menu and click 'Add to Home Screen'. On iPhone, tap the Share icon [↑] and select 'Add to Home Screen'.");
-    }
-  };
 
   const navItems = [
     {
@@ -165,14 +148,7 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* PWA Install Button */}
-        <button 
-          onClick={handleInstallClick}
-          className="mb-4 flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:bg-white/5 hover:text-white transition-all group w-full text-left"
-        >
-          <Smartphone className="w-5 h-5 text-indigo-500 group-hover:scale-110 transition-transform" />
-          <span className="font-semibold text-sm">Download App</span>
-        </button>
+
 
         <button 
           onClick={handleSignOut}

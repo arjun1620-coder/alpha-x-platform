@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, Cpu, Shield, Zap, Calendar, Trophy, AlertTriangle, Megaphone, Smartphone } from "lucide-react";
+import { ArrowRight, Cpu, Shield, Zap, Calendar, Trophy, AlertTriangle, Megaphone } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export const revalidate = 0;
@@ -48,13 +48,6 @@ export default async function Home() {
             </span>
           </div>
           <div className="flex gap-4 sm:gap-8 items-center">
-            <button
-              onClick={() => alert("To install: Open your browser menu and click 'Add to Home Screen'. On iPhone, tap the Share icon [↑] and select 'Add to Home Screen'.")}
-              className="text-sm font-medium text-gray-400 hover:text-white transition-colors flex items-center gap-2"
-            >
-              <Smartphone className="w-4 h-4 text-indigo-500" />
-              <span className="hidden xs:inline">App</span>
-            </button>
             <Link href="/contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">
               Contact
             </Link>

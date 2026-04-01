@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     }
 
     const mailOptions = {
-      from: `"Alpha X Robotics" <${process.env.GMAIL_USER}>`,
+      from: `"AlphaX Robotics" <${process.env.GMAIL_USER}>`,
       to,
       subject,
       html,

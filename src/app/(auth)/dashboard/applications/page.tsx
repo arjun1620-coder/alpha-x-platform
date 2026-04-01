@@ -81,14 +81,14 @@ export default function ApplicationsDashboard() {
             <div style="background:linear-gradient(135deg,#4f46e5,#1e293b);padding:40px 32px;text-align:center;">
               <div style="display:inline-flex;align-items:center;gap:10px;margin-bottom:16px;">
                 <div style="width:40px;height:40px;background:rgba(0,0,0,0.3);border-radius:10px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:white;font-size:14px;">AX</div>
-                <span style="color:white;font-size:20px;font-weight:800;letter-spacing:4px;">ALPHA X</span>
+                <span style="color:white;font-size:20px;font-weight:800;letter-spacing:4px;">AlphaX Robotics</span>
               </div>
               <h1 style="color:white;font-size:26px;font-weight:900;margin:0 0 8px;">Application Approved! 🎉</h1>
               <p style="color:rgba(255,255,255,0.7);margin:0;font-size:14px;">Welcome to the team, ${app.full_name}!</p>
             </div>
             <div style="padding:32px;">
               <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 24px;">
-                Congratulations! Your application to join <strong style="color:white;">Alpha X Robotics</strong> has been reviewed and approved by our admin team.
+                Congratulations! Your application to join <strong style="color:white;">AlphaX Robotics</strong> has been reviewed and approved by our admin team.
               </p>
               <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:16px;padding:24px;margin-bottom:24px;">
                 <p style="color:#a5b4fc;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Your Login Credentials</p>
@@ -103,9 +103,9 @@ export default function ApplicationsDashboard() {
                 <p style="color:#64748b;font-size:11px;margin:12px 0 0;">You can change your password after logging in via your profile settings.</p>
               </div>
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/login" style="display:block;background:#6366f1;color:black;text-align:center;padding:16px;border-radius:12px;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;margin-bottom:24px;">
-                Login to Alpha X →
+                Login to AlphaX Robotics →
               </a>
-              <p style="color:#475569;font-size:12px;text-align:center;margin:0;">Alpha X Robotics Platform • Confidential</p>
+              <p style="color:#475569;font-size:12px;text-align:center;margin:0;">AlphaX Robotics Platform • Confidential</p>
             </div>
           </div>
         </body>
@@ -114,7 +114,7 @@ export default function ApplicationsDashboard() {
 
       const result = await sendNotificationEmail(
         app.email,
-        '🎉 Alpha X Application Approved – Your Login Details',
+        '🎉 AlphaX Robotics Application Approved – Your Login Details',
         emailHtml
       );
 
@@ -136,12 +136,12 @@ export default function ApplicationsDashboard() {
           <div style="max-width:560px;margin:40px auto;background:#080d1a;border:1px solid rgba(255,255,255,0.1);border-radius:24px;overflow:hidden;">
             <div style="background:linear-gradient(135deg,#1e293b,#0f172a);padding:40px 32px;text-align:center;">
               <h1 style="color:white;font-size:24px;font-weight:900;margin:0 0 8px;">Application Update</h1>
-              <p style="color:rgba(255,255,255,0.6);margin:0;font-size:14px;">From Alpha X Robotics</p>
+              <p style="color:rgba(255,255,255,0.6);margin:0;font-size:14px;">From AlphaX Robotics</p>
             </div>
             <div style="padding:32px;">
               <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 16px;">Dear ${app.full_name},</p>
               <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0 0 16px;">
-                Thank you for your interest in <strong style="color:white;">Alpha X Robotics</strong>. After reviewing your application, we regret to inform you that we are unable to move forward at this time.
+                Thank you for your interest in <strong style="color:white;">AlphaX Robotics</strong>. After reviewing your application, we regret to inform you that we are unable to move forward at this time.
               </p>
               <p style="color:#94a3b8;font-size:15px;line-height:1.6;margin:0;">
                 We encourage you to continue developing your skills and apply again in the future. Thank you for your time.
@@ -151,12 +151,12 @@ export default function ApplicationsDashboard() {
         </body>
         </html>
       `;
-      sendNotificationEmail(app.email, 'Alpha X Robotics – Application Status Update', emailHtml);
+      sendNotificationEmail(app.email, 'AlphaX Robotics – Application Status Update', emailHtml);
     }
   };
 
   const handleDeleteApplication = async (id: string, fullName: string) => {
-    if (!confirm(`Are you sure you want to completely erase ${fullName}'s data from Alpha X? This action is permanent and cannot be undone.`)) return;
+    if (!confirm(`Are you sure you want to completely erase ${fullName}'s data from AlphaX Robotics? This action is permanent and cannot be undone.`)) return;
 
     setApplications(prev => prev.filter(app => app.id !== id));
 
@@ -311,7 +311,7 @@ export default function ApplicationsDashboard() {
                               <button 
                                 onClick={() => handleDeleteApplication(app.id, app.full_name)}
                                 className="p-2 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20"
-                                title="Permanently Erase from Alpha X"
+                                title="Permanently Erase from AlphaX Robotics"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>

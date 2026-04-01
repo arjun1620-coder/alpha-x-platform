@@ -24,7 +24,7 @@ export default function ContactPage() {
             Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-500">Touch</span>
           </h1>
           <p className="text-lg text-gray-400 font-light max-w-2xl mx-auto leading-relaxed">
-            Have a question, want to collaborate, or just want to see our latest builds? Reach out to Alpha X Robotics through any of our channels below.
+            Have a question, want to collaborate, or just want to see our latest builds? Reach out to AlphaX Robotics through any of our channels below.
           </p>
         </div>
 
