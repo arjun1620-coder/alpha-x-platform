@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network, Calendar } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network, Calendar, Trash2 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function ApplicationsDashboard() {
@@ -46,6 +46,24 @@ export default function ApplicationsDashboard() {
     if (error) {
       console.error("Failed to update status:", error);
       // Revert if error occurs by refreshing data
+      fetchApplications();
+    }
+  };
+
+  const handleDeleteApplication = async (id: string, fullName: string) => {
+    if (!confirm(`Are you sure you want to completely erase ${fullName}'s data from Alpha X? This action is permanent and cannot be undone.`)) return;
+
+    // Optimistic UI update
+    setApplications(prev => prev.filter(app => app.id !== id));
+
+    // Database delete
+    const { error } = await supabase
+      .from('applications')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error("Failed to delete application:", error);
       fetchApplications();
     }
   };
@@ -210,7 +228,16 @@ export default function ApplicationsDashboard() {
                               </button>
                             </div>
                           ) : (
-                            <span className="text-gray-600 text-[10px] font-bold tracking-widest uppercase">Actioned</span>
+                            <div className="flex items-center justify-end gap-3">
+                              <span className="text-gray-600 text-[10px] font-bold tracking-widest uppercase">Actioned</span>
+                              <button 
+                                onClick={() => handleDeleteApplication(app.id, app.full_name)}
+                                className="p-2 text-gray-600 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all border border-transparent hover:border-red-500/20 shadow-none hover:shadow-[0_0_15px_rgba(239,68,68,0.15)]"
+                                title="Permanently Erase from Alpha X"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
                           )}
                         </td>
                       </tr>
