@@ -20,6 +20,8 @@ async function sendNotificationEmail(to: string, subject: string, html: string) 
   }
 }
 
+import Sidebar from "@/components/Sidebar";
+
 export default function ApplicationsDashboard() {
   const [applications, setApplications] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -178,60 +180,11 @@ export default function ApplicationsDashboard() {
     <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
       <div className="flex h-screen">
         
-        {/* Simplified Admin Sidebar */}
-        <div className="w-64 border-r border-white/5 bg-[#080d1a] p-6 hidden md:flex flex-col">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
-              <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
-            </div>
-            <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
-              ADMIN
-            </span>
-          </div>
-
-          <nav className="space-y-2 flex-1">
-            <Link href="/dashboard/applications" className="flex items-center gap-3 px-4 py-3 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-xl font-medium transition-all shadow-[0_0_15px_rgba(99,102,241,0.1)]">
-              <Users className="w-5 h-5" />
-              Applications
-            </Link>
-            <Link href="/dashboard/teams" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Network className="w-5 h-5" />
-              Teams
-            </Link>
-            <Link href="/dashboard/events" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Calendar className="w-5 h-5" />
-              Announcements
-            </Link>
-            <Link href="/dashboard/posts" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Activity className="w-5 h-5" />
-              Post Management
-            </Link>
-            <Link href="/dashboard/components" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Shield className="w-5 h-5" />
-              Components
-            </Link>
-            <Link href="/dashboard/payments" className="flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all">
-              <Activity className="w-5 h-5" />
-              Payments
-            </Link>
-          </nav>
-
-          <button 
-            onClick={async () => {
-              await supabase.auth.signOut();
-              localStorage.removeItem('userRole');
-              localStorage.removeItem('memberData');
-              window.location.href='/login';
-            }}
-            className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left"
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Sign Out
-          </button>
-        </div>
+        <Sidebar />
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-auto p-8 lg:p-12 relative z-10 w-full">
+        <div className="flex-1 overflow-auto p-4 sm:p-8 lg:p-12 pt-20 sm:pt-12 relative z-10 w-full">
+
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
             <div>
