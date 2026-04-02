@@ -76,40 +76,65 @@ export default function PaymentsPage() {
     e.preventDefault();
     setIsSavingConfig(true);
 
-    let qrUrl = newQrUrl;
+    try {
+      let qrUrl = newQrUrl;
 
-    // Upload new QR image if selected
-    if (qrFile) {
-      const fileName = `qr_${Date.now()}.${qrFile.name.split('.').pop()}`;
-      const { data: upData, error: upErr } = await supabase.storage
-        .from('payment-qr')
-        .upload(fileName, qrFile, { upsert: true });
+      // Upload new QR image if selected
+      if (qrFile) {
+        console.log("Uploading QR file:", qrFile.name);
+        const fileExt = qrFile.name.split('.').pop();
+        const fileName = `qr_${Date.now()}.${fileExt}`;
+        
+        const { data: upData, error: upErr } = await supabase.storage
+          .from('payment-qr')
+          .upload(fileName, qrFile, { 
+            cacheControl: '3600',
+            upsert: false 
+          });
 
-      if (!upErr && upData) {
-        const { data: urlData } = supabase.storage.from('payment-qr').getPublicUrl(fileName);
-        qrUrl = urlData.publicUrl;
+        if (upErr) {
+          console.error("Storage upload error:", upErr);
+          throw new Error(`Upload failed: ${upErr.message}`);
+        }
+
+        if (upData) {
+          const { data: urlData } = supabase.storage.from('payment-qr').getPublicUrl(fileName);
+          qrUrl = urlData.publicUrl;
+          console.log("New QR URL generated:", qrUrl);
+        }
       }
-    }
 
-    if (paymentConfig?.id) {
-      // Update existing
-      await supabase.from('payment_config').update({
-        qr_url: qrUrl,
-        upi_id: newUpiId,
-      }).eq('id', paymentConfig.id);
-    } else {
-      // Insert first record
-      await supabase.from('payment_config').insert({
-        qr_url: qrUrl,
-        upi_id: newUpiId,
-      });
-    }
+      if (paymentConfig?.id) {
+        // Update existing
+        const { error: updateErr } = await supabase.from('payment_config').update({
+          qr_url: qrUrl,
+          upi_id: newUpiId,
+          updated_at: new Date().toISOString(),
+        }).eq('id', paymentConfig.id);
+        
+        if (updateErr) throw updateErr;
+      } else {
+        // Insert first record
+        const { error: insertErr } = await supabase.from('payment_config').insert({
+          qr_url: qrUrl,
+          upi_id: newUpiId,
+        });
+        
+        if (insertErr) throw insertErr;
+      }
 
-    await fetchPaymentConfig();
-    setQrFile(null);
-    setQrPreview(null);
-    setIsEditingConfig(false);
-    setIsSavingConfig(false);
+      console.log("Payment config saved successfully");
+      await fetchPaymentConfig();
+      setQrFile(null);
+      setQrPreview(null);
+      setIsEditingConfig(false);
+      alert("Payment settings updated successfully!");
+    } catch (error: any) {
+      console.error("Error saving payment settings:", error);
+      alert(`Failed to save settings: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsSavingConfig(false);
+    }
   };
 
   const handleCopyUpi = () => {
@@ -188,9 +213,9 @@ export default function PaymentsPage() {
                   </h2>
 
                   {paymentConfig?.qr_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
                     <img 
-                      src={paymentConfig.qr_url} 
+                      key={paymentConfig.qr_url}
+                      src={`${paymentConfig.qr_url}${paymentConfig.qr_url.includes('?') ? '&' : '?'}t=${new Date(paymentConfig.updated_at || Date.now()).getTime()}`} 
                       alt="Payment QR Code" 
                       className="w-52 h-52 object-contain rounded-2xl border border-white/10 bg-white p-2 mb-6"
                     />

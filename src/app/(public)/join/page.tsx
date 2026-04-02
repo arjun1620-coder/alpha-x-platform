@@ -85,13 +85,13 @@ export default function JoinPage() {
             </p>
             
             {applicantId && (
-              <div className="bg-[#030712] border border-indigo-500/50 rounded-xl p-6 mb-10 mx-auto max-w-sm">
-                <p className="text-xs text-indigo-400 font-bold tracking-widest uppercase mb-2">Your Secure Tracking ID</p>
-                <div className="font-mono text-sm text-white bg-white/5 py-3 px-4 rounded-lg border border-white/10 break-all select-all">
+              <div className="bg-[#030712] border border-indigo-500/50 rounded-xl p-6 mb-10 mx-auto max-w-sm text-center">
+                <p className="text-xs text-indigo-400 font-bold tracking-widest uppercase mb-2">Application Tracking ID</p>
+                <div className="font-mono text-sm text-white bg-white/5 py-3 px-4 rounded-lg border border-white/10 break-all">
                   {applicantId}
                 </div>
-                <p className="text-xs text-gray-500 mt-3 flex items-center gap-2 justify-center">
-                  ⚠️ Save this ID. It will be required as your password to login if you are approved.
+                <p className="text-xs text-gray-500 mt-3 flex items-center gap-2 justify-center italic">
+                  Note: On approval, you can use your chosen password and email to login.
                 </p>
               </div>
             )}
@@ -142,6 +142,18 @@ export default function JoinPage() {
                   name="mobile_number" 
                   className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
                   placeholder="+1 (555) 000-0000"
+                />
+              </div>
+
+              <div className="space-y-3 md:col-span-1">
+                <label htmlFor="password" className="text-sm font-semibold text-gray-300">Create Secure Password *</label>
+                <input 
+                  required 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
+                  placeholder="••••••••"
                 />
               </div>
 

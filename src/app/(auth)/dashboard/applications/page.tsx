@@ -93,14 +93,14 @@ export default function ApplicationsDashboard() {
               <div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:16px;padding:24px;margin-bottom:24px;">
                 <p style="color:#a5b4fc;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Your Login Credentials</p>
                 <div style="margin-bottom:12px;">
-                  <span style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;">Email / Username</span>
+                  <span style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;">Email Address</span>
                   <p style="color:white;font-size:15px;font-weight:600;margin:4px 0 0;">${app.email}</p>
                 </div>
                 <div>
-                  <span style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;">Password / Login ID</span>
-                  <p style="color:#a5b4fc;font-size:13px;font-weight:700;font-family:monospace;margin:4px 0 0;word-break:break-all;">${loginId}</p>
+                  <span style="color:#64748b;font-size:12px;font-weight:600;text-transform:uppercase;">Password</span>
+                  <p style="color:#a5b4fc;font-size:13px;font-weight:700;margin:4px 0 0;">Use the password you created during signup.</p>
                 </div>
-                <p style="color:#64748b;font-size:11px;margin:12px 0 0;">You can change your password after logging in via your profile settings.</p>
+                <p style="color:#64748b;font-size:11px;margin:12px 0 0;">If you forgot your password, please contact an administrator.</p>
               </div>
               <a href="${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/login" style="display:block;background:#6366f1;color:black;text-align:center;padding:16px;border-radius:12px;font-weight:900;font-size:14px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;margin-bottom:24px;">
                 Login to AlphaX Robotics →
@@ -258,9 +258,7 @@ export default function ApplicationsDashboard() {
                         <td className="px-6 py-5">
                           <div className="font-bold text-white text-base">{app.full_name}</div>
                           <div className="text-indigo-400 font-medium text-xs mt-1">{app.email}</div>
-                          <div className="text-gray-500 text-[10px] mt-1 break-all max-w-[150px] truncate" title="This is the user's login password.">
-                            Login ID: {app.id}
-                          </div>
+                          <div className="text-gray-500 text-[10px] mt-1 italic">{app.mobile_number}</div>
                         </td>
                         <td className="px-6 py-5">
                           <div className="text-gray-300 font-medium">{app.college}</div>
