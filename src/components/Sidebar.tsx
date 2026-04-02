@@ -15,6 +15,7 @@ import {
   Menu, 
   X,
   MessageSquare,
+  Rocket,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
@@ -55,6 +56,12 @@ export default function Sidebar() {
       adminOnly: false,
     },
     {
+      href: "/dashboard/projects",
+      label: "Project Showcases",
+      icon: Rocket,
+      adminOnly: true,
+    },
+    {
       href: "/dashboard/posts",
       label: "Post Management",
       icon: Activity,
@@ -63,7 +70,7 @@ export default function Sidebar() {
     {
       href: "/dashboard/components",
       label: "Components",
-      icon: userRole === 'admin' ? Shield : Shield, // Use Shield for both now as seen in code
+      icon: Shield,
       adminOnly: false,
     },
     {

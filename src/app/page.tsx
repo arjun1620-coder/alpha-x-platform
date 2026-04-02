@@ -74,6 +74,9 @@ export default async function Home() {
             </span>
           </div>
           <div className="flex gap-4 sm:gap-8 items-center">
+            <Link href="/projects" className="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-300">
+              Projects
+            </Link>
             <Link href="/contact" className="text-sm font-medium text-gray-300 hover:text-white transition-colors duration-300">
               Contact
             </Link>

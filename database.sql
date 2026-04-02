@@ -175,3 +175,45 @@ alter table messages disable row level security;
 -- alter table admins disable row level security;
 -- alter table messages disable row level security;
 -- --------------------------------------------------------
+
+-- ========================================================
+-- NEW FEATURES (v2): Projects, Chat File Sharing
+-- Run these in the Supabase SQL Editor
+-- ========================================================
+
+-- 10. Projects Table (Public Showcase)
+create table if not exists projects (
+  id uuid default gen_random_uuid() primary key,
+  title text not null,
+  description text not null,
+  category text,
+  team_name text,
+  tags text[],
+  image_url text,
+  published boolean default true,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+alter table projects enable row level security;
+create policy "Allow public read of published projects" on projects for select using (published = true);
+create policy "Allow all operations on projects" on projects for all using (true);
+
+-- 11. Add file sharing columns to messages table
+alter table messages add column if not exists file_url text;
+alter table messages add column if not exists file_name text;
+alter table messages add column if not exists file_type text;
+
+-- 12. Storage Bucket Policies for chat-files
+-- First create the 'chat-files' bucket in Supabase Dashboard > Storage, then run:
+create policy "Allow public upload to chat-files" on storage.objects for insert with check (bucket_id = 'chat-files');
+create policy "Allow public read from chat-files" on storage.objects for select using (bucket_id = 'chat-files');
+create policy "Allow public update to chat-files" on storage.objects for update using (bucket_id = 'chat-files');
+create policy "Allow public delete from chat-files" on storage.objects for delete using (bucket_id = 'chat-files');
+
+-- 13. Storage Bucket Policies for project-images
+-- First create the 'project-images' bucket in Supabase Dashboard > Storage, then run:
+create policy "Allow public upload to project-images" on storage.objects for insert with check (bucket_id = 'project-images');
+create policy "Allow public read from project-images" on storage.objects for select using (bucket_id = 'project-images');
+create policy "Allow public update to project-images" on storage.objects for update using (bucket_id = 'project-images');
+create policy "Allow public delete from project-images" on storage.objects for delete using (bucket_id = 'project-images');
+

@@ -1,9 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Shield, XCircle, Search, Users, Activity, Loader2, Network, Calendar, Trash2, Mail } from "lucide-react";
+import { CheckCircle2, Shield, XCircle, Search, Loader2, Trash2, Mail, MessageCircle } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+import Sidebar from "@/components/Sidebar";
+import Confetti from "@/components/Confetti";
+import Toast, { useToast } from "@/components/Toast";
 
 async function sendNotificationEmail(to: string, subject: string, html: string) {
   try {
@@ -12,21 +14,33 @@ async function sendNotificationEmail(to: string, subject: string, html: string) 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ to, subject, html }),
     });
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (err) {
     console.error('Failed to send email:', err);
     return { error: 'Network error' };
   }
 }
 
-import Sidebar from "@/components/Sidebar";
+async function sendWhatsAppMessage(phone: string, message: string) {
+  try {
+    const res = await fetch('/api/send-whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone, message }),
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to generate WhatsApp link:', err);
+    return { error: 'Network error' };
+  }
+}
 
 export default function ApplicationsDashboard() {
   const [applications, setApplications] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [emailStatus, setEmailStatus] = useState<{id: string, status: string} | null>(null);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const { addToast, ToastContainer } = useToast();
 
   useEffect(() => {
     fetchApplications();
@@ -47,14 +61,8 @@ export default function ApplicationsDashboard() {
   };
 
   const handleAction = async (id: string, action: "approved" | "rejected") => {
-    // Optimistic UI update
-    setApplications(prev => 
-      prev.map(app => 
-        app.id === id ? { ...app, status: action } : app
-      )
-    );
+    setApplications(prev => prev.map(app => app.id === id ? { ...app, status: action } : app));
 
-    // Database update
     const { error } = await supabase
       .from('applications')
       .update({ status: action })
@@ -62,15 +70,22 @@ export default function ApplicationsDashboard() {
 
     if (error) {
       console.error("Failed to update status:", error);
+      addToast("Failed to update application status", "error");
       fetchApplications();
       return;
     }
 
-    // Send email notification if approved
     const app = applications.find(a => a.id === id);
+
     if (app && action === 'approved') {
-      setEmailStatus({ id, status: 'sending' });
+      // 🎉 Confetti!
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 100);
       
+      addToast(`${app.full_name} has been approved!`, "success");
+
+      // Send approval email
+      addToast("Sending approval email...", "info");
       const emailHtml = `
         <!DOCTYPE html>
         <html>
@@ -111,23 +126,35 @@ export default function ApplicationsDashboard() {
         </html>
       `;
 
-      const result = await sendNotificationEmail(
+      const emailResult = await sendNotificationEmail(
         app.email,
         '🎉 AlphaX Robotics Application Approved – Your Login Details',
         emailHtml
       );
 
-      if (result.success) {
-        setEmailStatus({ id, status: 'sent' });
+      if (emailResult.success) {
+        addToast("Approval email sent successfully!", "success");
       } else {
-        setEmailStatus({ id, status: 'failed' });
+        addToast("Email delivery failed — check GMAIL env vars", "error");
       }
 
-      setTimeout(() => setEmailStatus(null), 4000);
+      // Send WhatsApp notification
+      if (app.mobile_number) {
+        const waMessage = `🎉 *AlphaX Robotics*\n\nHi ${app.full_name}! Your application to AlphaX Robotics has been *APPROVED*! 🚀\n\n📧 Login Email: ${app.email}\n🔑 Password: Use the one you created during signup\n\n🔗 Login here: ${process.env.NEXT_PUBLIC_SITE_URL || 'https://alpha-x-robotics.vercel.app'}/login\n\nWelcome to the team!`;
+        
+        const waResult = await sendWhatsAppMessage(app.mobile_number, waMessage);
+        
+        if (waResult.success && waResult.waLink) {
+          addToast("Opening WhatsApp to send approval message...", "info");
+          // Open WhatsApp in a new tab with the pre-filled message
+          window.open(waResult.waLink, '_blank');
+        }
+      }
     }
 
     if (app && action === 'rejected') {
-      // Send rejection email
+      addToast(`${app.full_name}'s application has been rejected`, "warning");
+      
       const emailHtml = `
         <!DOCTYPE html>
         <html>
@@ -151,6 +178,15 @@ export default function ApplicationsDashboard() {
         </html>
       `;
       sendNotificationEmail(app.email, 'AlphaX Robotics – Application Status Update', emailHtml);
+
+      // WhatsApp rejection message
+      if (app.mobile_number) {
+        const waMessage = `Hi ${app.full_name},\n\nThank you for applying to *AlphaX Robotics*.\n\nUnfortunately, we are unable to move forward with your application at this time. We encourage you to continue developing your skills and apply again in the future.\n\n— AlphaX Robotics Team`;
+        const waResult = await sendWhatsAppMessage(app.mobile_number, waMessage);
+        if (waResult.success && waResult.waLink) {
+          window.open(waResult.waLink, '_blank');
+        }
+      }
     }
   };
 
@@ -166,7 +202,10 @@ export default function ApplicationsDashboard() {
 
     if (error) {
       console.error("Failed to delete application:", error);
+      addToast("Failed to delete application", "error");
       fetchApplications();
+    } else {
+      addToast(`${fullName}'s data has been permanently erased`, "info");
     }
   };
 
@@ -177,14 +216,14 @@ export default function ApplicationsDashboard() {
 
   return (
     <div className="min-h-screen bg-transparent text-white selection:bg-indigo-500/30 overflow-hidden relative">
+      <Confetti trigger={showConfetti} />
+      <ToastContainer />
+      
       <div className="flex h-screen">
-        
         <Sidebar />
 
-        {/* Main Content Area */}
-        <div className="flex-1 overflow-auto p-4 sm:p-8 lg:p-12 pt-20 sm:pt-12 relative z-10 w-full">
+        <div className="flex-1 overflow-auto p-4 sm:p-8 lg:p-12 pt-20 sm:pt-12 relative z-10 w-full animate-slide-in">
 
-          {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-12">
             <div>
               <h1 className="text-3xl font-bold tracking-tight mb-2 flex items-center gap-3">
@@ -192,7 +231,7 @@ export default function ApplicationsDashboard() {
                 Applications
               </h1>
               <p className="text-gray-400 max-w-xl text-sm leading-relaxed">
-                Review and approve newly submitted profiles. Approved members will be automatically notified by email.
+                Review and approve newly submitted profiles. Approved members will be notified via email & WhatsApp.
               </p>
             </div>
 
@@ -210,23 +249,6 @@ export default function ApplicationsDashboard() {
             </div>
           </div>
 
-          {/* Email status toast */}
-          {emailStatus && (
-            <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3 rounded-2xl border shadow-2xl backdrop-blur-xl transition-all ${
-              emailStatus.status === 'sending' ? 'bg-indigo-500/20 border-indigo-500/30 text-indigo-300' :
-              emailStatus.status === 'sent' ? 'bg-green-500/20 border-green-500/30 text-green-300' :
-              'bg-red-500/20 border-red-500/30 text-red-300'
-            }`}>
-              <Mail className="w-4 h-4" />
-              <span className="text-sm font-medium">
-                {emailStatus.status === 'sending' ? 'Sending approval email...' :
-                 emailStatus.status === 'sent' ? 'Approval email sent!' :
-                 'Email delivery failed (check GMAIL env vars)'}
-              </span>
-            </div>
-          )}
-
-          {/* Table Container */}
           <div className="bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-sm overflow-hidden shadow-2xl min-h-[50vh]">
             {isLoading ? (
               <div className="flex flex-col items-center justify-center p-20 h-full">
@@ -257,7 +279,9 @@ export default function ApplicationsDashboard() {
                         <td className="px-6 py-5">
                           <div className="font-bold text-white text-base">{app.full_name}</div>
                           <div className="text-indigo-400 font-medium text-xs mt-1">{app.email}</div>
-                          <div className="text-gray-500 text-[10px] mt-1 italic">{app.mobile_number}</div>
+                          <div className="text-gray-500 text-[10px] mt-1 italic flex items-center gap-1">
+                            <MessageCircle className="w-3 h-3" /> {app.mobile_number}
+                          </div>
                         </td>
                         <td className="px-6 py-5">
                           <div className="text-gray-300 font-medium">{app.college}</div>
@@ -297,7 +321,7 @@ export default function ApplicationsDashboard() {
                               <button 
                                 onClick={() => handleAction(app.id, 'approved')}
                                 className="p-2 text-indigo-400 hover:text-indigo-300 hover:bg-indigo-400/10 rounded-lg border border-indigo-500/30 transition-all shadow-[0_0_15px_rgba(99,102,241,0.15)] hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:scale-105 active:scale-95"
-                                title="Approve &amp; Notify via Email"
+                                title="Approve & Notify via Email + WhatsApp"
                               >
                                 <CheckCircle2 className="w-5 h-5" />
                               </button>
@@ -323,7 +347,6 @@ export default function ApplicationsDashboard() {
             )}
           </div>
         </div>
-
       </div>
     </div>
   );
