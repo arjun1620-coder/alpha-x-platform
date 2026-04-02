@@ -135,14 +135,19 @@ export default function JoinPage() {
 
               <div className="space-y-3 md:col-span-1">
                 <label htmlFor="mobile_number" className="text-sm font-semibold text-gray-300">Mobile Number *</label>
-                <input 
-                  required 
-                  type="tel" 
-                  id="mobile_number" 
-                  name="mobile_number" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
-                  placeholder="+1 (555) 000-0000"
-                />
+                <div className="flex">
+                  <span className="inline-flex items-center px-4 bg-white/5 border border-r-0 border-white/10 rounded-l-xl text-gray-400 text-sm font-bold">+91</span>
+                  <input 
+                    required 
+                    type="tel" 
+                    id="mobile_number" 
+                    name="mobile_number" 
+                    pattern="[0-9]{10}"
+                    maxLength={10}
+                    className="w-full bg-[#030712] border border-white/10 rounded-r-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
+                    placeholder="98765 43210"
+                  />
+                </div>
               </div>
 
               <div className="space-y-3 md:col-span-1">
