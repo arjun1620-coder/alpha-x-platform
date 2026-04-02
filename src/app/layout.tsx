@@ -73,8 +73,7 @@ export const metadata: Metadata = {
     shortcut: "/icons/v1-192.png",
   },
   verification: {
-    // Add your Google Search Console verification code here after setup:
-    // google: "your-verification-code",
+    google: "bJmbVVIt1tF1Ye7r7y-Ocl6LpY0pX8T8_J5vI7ZfU4s",
   },
 };
 
