@@ -71,7 +71,6 @@ export default function ApplicationsDashboard() {
     if (app && action === 'approved') {
       setEmailStatus({ id, status: 'sending' });
       
-      const loginId = app.id;
       const emailHtml = `
         <!DOCTYPE html>
         <html>

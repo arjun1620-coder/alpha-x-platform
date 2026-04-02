@@ -38,10 +38,7 @@ export default function LoginPage() {
       .eq('status', 'approved')
       .single();
 
-    const matchesPassword = memberData && (
-      (memberData.password && memberData.password === password) || 
-      (!memberData.password && memberData.id.toString() === password)
-    );
+    const matchesPassword = memberData && memberData.password && memberData.password === password;
 
     if (matchesPassword) {
       localStorage.setItem('userRole', 'member');
@@ -98,7 +95,7 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Password / Tracking ID</label>
+              <label className="text-xs font-bold tracking-wider text-gray-400 uppercase">Password</label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <KeyRound className="w-5 h-5 text-gray-600" />
