@@ -118,9 +118,8 @@ export default function Sidebar() {
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}>
         <div className="flex items-center gap-3 mb-12">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-400 to-slate-600 flex items-center justify-center">
-            <span className="font-extrabold text-black text-xs tracking-tight">AX</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/v1-192.png" alt="AlphaX" className="w-8 h-8 rounded-lg" />
           <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 uppercase">
             {userRole || 'Loading...'}
           </span>

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 /**
  * ScrollAnimations — Apple-style IntersectionObserver.
- * Drop this once in a layout to activate all `.animate-on-scroll` elements.
+ * Activates `.animate-on-scroll` and `.animate-on-scroll-scale` elements.
  */
 export default function ScrollAnimations() {
   useEffect(() => {
@@ -13,7 +13,7 @@ export default function ScrollAnimations() {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target); // Only animate once
+            observer.unobserve(entry.target);
           }
         });
       },
@@ -23,11 +23,26 @@ export default function ScrollAnimations() {
       }
     );
 
-    document.querySelectorAll(".animate-on-scroll").forEach((el) => {
+    // Observe both animation types
+    document.querySelectorAll(".animate-on-scroll, .animate-on-scroll-scale").forEach((el) => {
       observer.observe(el);
     });
 
-    return () => observer.disconnect();
+    // Card spotlight mouse tracking
+    const cards = document.querySelectorAll<HTMLElement>(".card-spotlight");
+    const handleCardMouse = (e: MouseEvent) => {
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
+        card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
+      });
+    };
+    window.addEventListener("mousemove", handleCardMouse);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("mousemove", handleCardMouse);
+    };
   }, []);
 
   return null;

@@ -6,7 +6,7 @@ import ScrollAnimations from "@/components/ScrollAnimations";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-  display: "swap", // Performance: prevent FOIT
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
@@ -19,6 +19,11 @@ export const metadata: Metadata = {
   title: "AlphaX Robotics",
   description: "Next-generation robotics engineering platform. Join the team pushing the boundaries of autonomous systems, hardware design, and AI.",
   keywords: ["robotics", "engineering", "AI", "autonomous systems", "AlphaX"],
+  icons: {
+    icon: "/icons/v1-192.png",
+    apple: "/icons/v1-192.png",
+    shortcut: "/icons/v1-192.png",
+  },
 };
 
 export default function RootLayout({
