@@ -28,20 +28,8 @@ export default function ScrollAnimations() {
       observer.observe(el);
     });
 
-    // Card spotlight mouse tracking
-    const cards = document.querySelectorAll<HTMLElement>(".card-spotlight");
-    const handleCardMouse = (e: MouseEvent) => {
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        card.style.setProperty("--mouse-x", `${e.clientX - rect.left}px`);
-        card.style.setProperty("--mouse-y", `${e.clientY - rect.top}px`);
-      });
-    };
-    window.addEventListener("mousemove", handleCardMouse);
-
     return () => {
       observer.disconnect();
-      window.removeEventListener("mousemove", handleCardMouse);
     };
   }, []);
 

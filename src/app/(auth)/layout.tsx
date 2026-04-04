@@ -20,7 +20,19 @@ export default function AuthLayout({
 
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data, error } = await supabase.auth.getSession();
+        
+        // Handle explicit Supabase Auth errors (like Invalid Refresh Token)
+        if (error) {
+          console.warn("Auth session sync error:", error.message);
+          if (error.message.includes("Refresh Token")) {
+            localStorage.clear();
+            if (isMounted) router.push("/login?error=Session%20Expired");
+            return;
+          }
+        }
+
+        const session = data?.session;
         const userRole = localStorage.getItem('userRole');
         
         // Allow if there's a Supabase session (Admin) OR a member role
@@ -28,11 +40,15 @@ export default function AuthLayout({
           localStorage.setItem('userRole', 'admin');
         }
 
-        const userRoleMap = localStorage.getItem('userRole'); // Re-read after potential update
+        const userRoleMap = localStorage.getItem('userRole'); 
+        
         if (!session && userRoleMap !== 'member') {
-          if (isMounted) router.push("/login?error=Unauthorized%20Access");
+          if (isMounted) {
+            localStorage.clear(); // Safety clear
+            router.push("/login?error=Unauthorized%20Access");
+          }
         } else if (isMounted) {
-          // If member is trying to access applications or posts (admin only), redirect them
+          // Access control logic
           if (userRoleMap === 'member' && (pathname.includes('/applications') || pathname.includes('/posts'))) {
             router.push('/dashboard/teams');
           } else {
@@ -40,7 +56,8 @@ export default function AuthLayout({
           }
         }
       } catch (err) {
-        console.error("Auth check failed:", err);
+        console.error("Critical Auth failure:", err);
+        localStorage.clear();
         if (isMounted) router.push("/login");
       }
     };
@@ -50,7 +67,8 @@ export default function AuthLayout({
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         const userRole = localStorage.getItem('userRole');
-        if (!session && userRole !== 'member' && isMounted) {
+        if (event === 'SIGNED_OUT' || (!session && userRole !== 'member' && isMounted)) {
+          localStorage.clear();
           router.push("/login");
         }
       }

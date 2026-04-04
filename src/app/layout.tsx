@@ -110,10 +110,10 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col relative text-white bg-[#030712] animate-page-in">
-        {/* Global Background — GPU accelerated */}
-        <div className="fixed inset-0 z-[-10] w-full h-full bg-[#030712] gpu-accelerate">
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f2e_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f2e_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-          <div className="absolute top-0 left-0 right-0 h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.12),transparent_50%)]" />
+        {/* Global Background Layer */}
+        <div className="fixed inset-0 z-[-10] w-full h-full bg-mesh-gradient gpu-accelerate overflow-hidden">
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_80%_at_50%_0%,black_40%,transparent_100%)]" />
+          <div className="absolute top-0 left-0 right-0 h-full w-full bg-gradient-to-b from-indigo-500/5 via-transparent to-transparent pointer-events-none" />
         </div>
         
         <ScrollAnimations />

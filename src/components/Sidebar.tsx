@@ -16,13 +16,14 @@ import {
   X,
   MessageSquare,
   Rocket,
+  Heart,
+  ShoppingCart,
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
 
 
   useEffect(() => {
@@ -69,14 +70,20 @@ export default function Sidebar() {
     },
     {
       href: "/dashboard/components",
-      label: "Components",
-      icon: Shield,
+      label: "Buy Components",
+      icon: Cpu,
+      adminOnly: false,
+    },
+    {
+      href: "/dashboard/orders",
+      label: "Orders",
+      icon: ShoppingCart,
       adminOnly: false,
     },
     {
       href: "/dashboard/payments",
-      label: "Payments",
-      icon: IndianRupee,
+      label: "Contribute",
+      icon: Heart,
       adminOnly: false,
     },
   ];
@@ -94,46 +101,101 @@ export default function Sidebar() {
     window.location.href='/login';
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+
   const toggleSidebar = () => setIsOpen(!isOpen);
+
+  // Auto-hide when mouse leaves the sidebar area
+  const sidebarExpanded = isOpen || isHovered;
 
   return (
     <>
-      {/* Mobile Menu Button - Fixed at top-left */}
-      <div className="md:hidden fixed top-6 left-6 z-[60]">
+      {/* Edge Hover Trigger Zone - Invisible but active */}
+      <div 
+        className="fixed inset-y-0 left-0 w-4 z-[54] transition-all"
+        onMouseEnter={() => setIsHovered(true)}
+      />
+
+      {/* Floating Toggle Button (visible when sidebar is closed) */}
+      <div className={`
+        fixed top-1/2 -translate-y-1/2 left-0 z-[60] transition-all duration-500
+        ${sidebarExpanded ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100 delay-300'}
+      `}>
         <button 
           onClick={toggleSidebar}
-          className="p-3 bg-[#080d1a] border border-white/10 rounded-xl text-indigo-400 shadow-2xl backdrop-blur-md"
-          aria-label="Toggle Menu"
+          onMouseEnter={() => setIsHovered(true)}
+          className="group flex flex-col items-center justify-center gap-1 w-12 h-24 bg-[#080d1a]/80 backdrop-blur-xl border border-white/10 rounded-r-2xl text-indigo-400 hover:text-white hover:w-14 transition-all shadow-[10px_0_30px_rgba(0,0,0,0.5)] border-l-0"
+          aria-label="Open Sidebar"
         >
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          <div className="w-1 h-8 bg-indigo-500/40 group-hover:bg-indigo-400 rounded-full transition-colors" />
+          <Menu className="w-5 h-5 -rotate-90 group-hover:scale-110 transition-transform" />
         </button>
       </div>
 
-      {/* Sidebar Overlay for Mobile */}
-      {isOpen && (
+      {/* Mobile Menu Button - Original logic for small screens */}
+      <div className="md:hidden fixed top-6 left-6 z-[60]">
+        {!sidebarExpanded && (
+          <button 
+            onClick={toggleSidebar}
+            className="p-3 bg-[#080d1a] border border-white/10 rounded-xl text-indigo-400 shadow-2xl backdrop-blur-md"
+            aria-label="Toggle Menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        )}
+      </div>
+
+      {/* Sidebar Overlay for Mobile/Focus */}
+      {sidebarExpanded && (
         <div 
-          className="md:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[50]"
-          onClick={toggleSidebar}
+          className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-[50] transition-opacity duration-500"
+          onClick={() => {
+            setIsOpen(false);
+            setIsHovered(false);
+          }}
+          onMouseEnter={() => setIsHovered(false)}
         />
       )}
 
       {/* Sidebar Content */}
-      <div className={`
-        fixed md:relative inset-y-0 left-0 z-[55]
-        w-64 border-r border-white/5 bg-[#080d1a] p-6 pt-24 md:pt-6
-        flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto
-        ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
-      `}>
-        <div className="flex items-center gap-3 mb-12">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/icons/v1-192.png" alt="AlphaX" className="w-8 h-8 rounded-lg" />
-          <span className="font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 uppercase">
-            {userRole || 'Loading...'}
-          </span>
+      <div 
+        className={`
+          fixed inset-y-0 left-0 z-[55]
+          w-72 border-r border-white/10 p-7 pt-24 md:pt-10
+          flex flex-col overflow-y-auto
+          transition-all duration-300 ease-out will-change-transform gpu-accelerate
+          backdrop-blur-xl bg-[#080d1a]/90 shadow-[10px_0_50px_rgba(0,0,0,0.5)]
+          ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}
+        `}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="flex items-center justify-between mb-12 animate-slide-in">
+          <div className="flex items-center gap-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/v1-192.png" alt="AlphaX" className="w-9 h-9 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] border border-white/5" />
+            <div className="flex flex-col">
+              <span className="font-black tracking-[0.2em] text-white uppercase text-[10px]">AlphaX</span>
+              <span className="font-bold text-indigo-400 uppercase text-[9px] opacity-70">
+                {userRole || 'Loading...'}
+              </span>
+            </div>
+          </div>
+          <button 
+            onClick={() => {
+              setIsOpen(false);
+              setIsHovered(false);
+            }}
+            className="p-2 rounded-xl bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all border border-white/5"
+            title="Close Sidebar"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
-        <nav className="space-y-2 flex-1">
-          {filteredNavItems.map((item) => {
+        <nav className="space-y-1.5 flex-1">
+          {filteredNavItems.map((item, index) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
             return (
@@ -141,28 +203,37 @@ export default function Sidebar() {
                 key={item.href}
                 href={item.href} 
                 onClick={() => setIsOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl font-medium transition-all ${
+                className={`flex items-center gap-3.5 px-4 py-3.5 rounded-2xl font-semibold transition-all duration-300 group relative overflow-hidden ${
                   isActive 
-                    ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-[0_0_15px_rgba(99,102,241,0.1)]' 
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'bg-indigo-500/10 text-white border border-indigo-500/30 shadow-[0_0_25px_rgba(99,102,241,0.15)]' 
+                    : 'text-gray-400 hover:text-white hover:bg-white/5 active:scale-95'
                 }`}
+                style={{ 
+                  animation: `slide-in-right 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${index * 0.05}s both` 
+                }}
               >
-                <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-400' : ''}`} />
-                {item.label}
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-7 bg-indigo-500 rounded-r-full shadow-[0_0_20px_rgba(99,102,241,1)]" />
+                )}
+                <Icon className={`w-5 h-5 transition-all duration-300 group-hover:scale-115 group-hover:rotate-6 ${isActive ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'group-hover:text-indigo-300'}`} />
+                <span className="relative z-10 text-sm tracking-wide">{item.label}</span>
+                {!isActive && (
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000" />
+                )}
               </Link>
             );
           })}
         </nav>
 
-
-
-        <button 
-          onClick={handleSignOut}
-          className="w-full flex items-center gap-3 px-4 py-3 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl font-medium transition-all text-left mt-auto"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Sign Out
-        </button>
+        <div className="pt-6 border-t border-white/5 mt-auto space-y-4">
+          <button 
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3.5 px-5 py-4 text-gray-500 hover:text-red-400 hover:bg-red-500/5 rounded-2xl font-bold transition-all duration-300 group active:scale-95 text-left text-xs uppercase tracking-widest border border-transparent hover:border-red-500/10"
+          >
+            <ArrowLeft className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1.5" />
+            Sign Out
+          </button>
+        </div>
       </div>
     </>
   );

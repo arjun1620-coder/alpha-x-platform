@@ -8,11 +8,7 @@ import AnimatedCounter from "@/components/AnimatedCounter";
 export const revalidate = 60;
 
 export default async function Home() {
-  const { data: events } = await supabase
-    .from('events')
-    .select('*')
-    .order('event_date', { ascending: true })
-    .limit(3);
+
 
   // Fetch live stats
   const { count: memberCount } = await supabase
@@ -24,23 +20,7 @@ export default async function Home() {
     .from('teams')
     .select('*', { count: 'exact', head: true });
 
-  const getCategoryIcon = (cat: string, className: string) => {
-    switch (cat) {
-      case 'competition': return <Trophy className={className} />;
-      case 'deadline': return <AlertTriangle className={className} />;
-      case 'event': return <Calendar className={className} />;
-      default: return <Megaphone className={className} />;
-    }
-  };
 
-  const getCategoryColor = (cat: string) => {
-    switch(cat) {
-      case 'competition': return 'text-yellow-400 border-yellow-500/30 bg-yellow-500/10';
-      case 'deadline': return 'text-red-400 border-red-500/30 bg-red-500/10';
-      case 'event': return 'text-blue-400 border-blue-500/30 bg-blue-500/10';
-      default: return 'text-indigo-400 border-indigo-500/30 bg-indigo-500/10';
-    }
-  };
 
   const marqueeItems = [
     "ROBOTICS", "ARTIFICIAL INTELLIGENCE", "EMBEDDED SYSTEMS", "PCB DESIGN", 
@@ -179,12 +159,7 @@ export default async function Home() {
                 </div>
                 <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Tech Stacks</p>
               </div>
-              <div className="text-center p-6 rounded-2xl bg-white/[0.02] border border-white/5 card-spotlight stagger-3">
-                <div className="text-4xl md:text-5xl font-black text-white stat-number mb-2">
-                  <AnimatedCounter target={24} suffix="/7" />
-                </div>
-                <p className="text-xs font-bold uppercase tracking-widest text-gray-500">Operations</p>
-              </div>
+
             </div>
           </div>
         </section>
@@ -206,7 +181,7 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <div className="animate-on-scroll stagger-1 p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-indigo-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight aurora-bg">
+            <div className="animate-on-scroll stagger-1 p-10 rounded-[2rem] glass hover:border-indigo-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight gradient-border-animated">
               <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-indigo-500/20 group-hover:shadow-[0_0_30px_rgba(99,102,241,0.2)]">
                 <Cpu className="w-8 h-8 text-indigo-400" />
               </div>
@@ -219,7 +194,7 @@ export default async function Home() {
               </div>
             </div>
             
-            <div className="animate-on-scroll stagger-2 p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-purple-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight aurora-bg">
+            <div className="animate-on-scroll stagger-2 p-10 rounded-[2rem] glass hover:border-purple-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight gradient-border-animated">
               <div className="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 border border-purple-500/20 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.2)]">
                 <Zap className="w-8 h-8 text-purple-400" />
               </div>
@@ -232,7 +207,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="animate-on-scroll stagger-3 p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-emerald-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight aurora-bg">
+            <div className="animate-on-scroll stagger-3 p-10 rounded-[2rem] glass hover:border-emerald-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight gradient-border-animated">
               <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 border border-emerald-500/20 group-hover:shadow-[0_0_30px_rgba(16,185,129,0.2)]">
                 <Shield className="w-8 h-8 text-emerald-400" />
               </div>
@@ -245,7 +220,7 @@ export default async function Home() {
               </div>
             </div>
 
-            <div className="animate-on-scroll stagger-4 p-10 rounded-[2rem] bg-white/[0.03] border border-white/5 hover:border-amber-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight aurora-bg">
+            <div className="animate-on-scroll stagger-4 p-10 rounded-[2rem] glass hover:border-amber-500/30 transition-all duration-500 group cursor-default card-hover card-spotlight gradient-border-animated">
               <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500 border border-amber-500/20 group-hover:shadow-[0_0_30px_rgba(245,158,11,0.2)]">
                 <Rocket className="w-8 h-8 text-amber-400" />
               </div>
@@ -266,43 +241,7 @@ export default async function Home() {
         {/* ══════════════════════════════════════════════
             EVENTS
             ══════════════════════════════════════════════ */}
-        {events && events.length > 0 && (
-          <section className="mt-16 max-w-4xl mx-auto pb-20 px-4">
-            <div className="animate-on-scroll text-center mb-12">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-bold tracking-widest uppercase mb-4">
-                <Calendar className="w-4 h-4" /> Live Radar
-              </div>
-              <h2 className="text-3xl md:text-5xl font-black tracking-tighter uppercase mb-4">
-                Operations & Events
-              </h2>
-            </div>
-            
-            <div className="space-y-4">
-              {events.map((ev: any, index: number) => (
-                <div 
-                  key={ev.id} 
-                  className={`animate-on-scroll stagger-${index + 1} bg-white/[0.03] border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm shadow-xl flex flex-col md:flex-row gap-6 items-start group hover:border-indigo-500/30 transition-all duration-500 card-hover card-spotlight`}
-                >
-                  <div className={`p-4 rounded-2xl border ${getCategoryColor(ev.category)} flex-shrink-0 flex items-center justify-center group-hover:scale-110 transition-transform duration-500`}>
-                    {getCategoryIcon(ev.category, "w-8 h-8")}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-3 mb-2">
-                      <span className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded border ${getCategoryColor(ev.category)}`}>
-                        {ev.category}
-                      </span>
-                      <span className="text-gray-400 font-mono text-sm">
-                        {new Date(ev.event_date).toLocaleDateString(undefined, { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
-                      </span>
-                    </div>
-                    <h3 className="text-xl md:text-2xl font-bold text-white mb-2">{ev.title}</h3>
-                    <p className="text-gray-400 leading-relaxed max-w-2xl">{ev.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
+
 
         {/* ══════════════════════════════════════════════
             CTA BANNER — Join the team

@@ -1,11 +1,33 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle2, Shield, XCircle, Search, Loader2, Trash2, Mail, MessageCircle } from "lucide-react";
+import { CheckCircle2, Shield, XCircle, Search, Loader2, Trash2, Mail, MessageCircle, Eye, EyeOff } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import Sidebar from "@/components/Sidebar";
 import Confetti from "@/components/Confetti";
 import Toast, { useToast } from "@/components/Toast";
+
+// Simple ReadMore Component to keep table clean
+const ReadMore = ({ text, maxLength = 50 }: { text: string, maxLength?: number }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const shouldTruncate = text.length > maxLength;
+  
+  if (!shouldTruncate) return <span className="text-gray-300">{text}</span>;
+
+  return (
+    <div className="flex flex-col gap-1">
+      <div className={`text-gray-300 ${!isExpanded ? 'truncate max-w-[200px]' : 'whitespace-normal'}`}>
+        {text}
+      </div>
+      <button 
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 uppercase tracking-widest text-left w-fit"
+      >
+        {isExpanded ? "Show Less" : "Read More"}
+      </button>
+    </div>
+  );
+};
 
 async function sendNotificationEmail(to: string, subject: string, html: string) {
   try {
@@ -257,11 +279,12 @@ export default function ApplicationsDashboard() {
               </div>
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm whitespace-nowrap">
+                <table className="w-full text-left text-sm">
                   <thead className="bg-white/5 text-gray-400 border-b border-white/10 text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-5 font-semibold">Candidate</th>
                       <th className="px-6 py-5 font-semibold">Institution</th>
+                      <th className="px-6 py-5 font-semibold">Achievements</th>
                       <th className="px-6 py-5 font-semibold">Skills</th>
                       <th className="px-6 py-5 font-semibold text-center">Status</th>
                       <th className="px-6 py-5 font-semibold text-right">Actions</th>
@@ -270,31 +293,28 @@ export default function ApplicationsDashboard() {
                   <tbody className="divide-y divide-white/5">
                     {filteredApps.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="px-6 py-16 text-center text-gray-500 text-base">
+                        <td colSpan={6} className="px-6 py-16 text-center text-gray-500 text-base">
                           No pending applications. The network is quiet.
                         </td>
                       </tr>
                     ) : filteredApps.map((app) => (
                       <tr key={app.id} className="hover:bg-white/[0.02] transition-colors">
                         <td className="px-6 py-5">
-                          <div className="font-bold text-white text-base">{app.full_name}</div>
-                          <div className="text-indigo-400 font-medium text-xs mt-1">{app.email}</div>
+                          <div className="font-bold text-white text-base truncate max-w-[150px]">{app.full_name}</div>
+                          <div className="text-indigo-400 font-medium text-xs mt-1 truncate max-w-[150px]">{app.email}</div>
                           <div className="text-gray-500 text-[10px] mt-1 italic flex items-center gap-1">
                             <MessageCircle className="w-3 h-3" /> {app.mobile_number}
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <div className="text-gray-300 font-medium">{app.college}</div>
-                          <div className="text-gray-500 text-xs mt-1">{app.department} • Year: {app.year_of_study}</div>
+                          <div className="text-gray-300 font-medium truncate max-w-[200px]">{app.college}</div>
+                          <div className="text-gray-500 text-xs mt-1 truncate max-w-[200px]">{app.department} • {app.year_of_study}</div>
                         </td>
                         <td className="px-6 py-5">
-                          <div className="flex flex-wrap gap-2 max-w-[250px] whitespace-normal">
-                            {app.skills && app.skills.map((skill: string) => (
-                              <span key={skill} className="px-2.5 py-1 rounded text-[10px] font-bold tracking-wide uppercase bg-white/10 text-gray-300 border border-white/5">
-                                {skill}
-                              </span>
-                            ))}
-                          </div>
+                          <ReadMore text={app.achievements || "No achievements listed."} maxLength={50} />
+                        </td>
+                        <td className="px-6 py-5">
+                          <ReadMore text={app.skills?.join(", ") || "No skills listed."} maxLength={40} />
                         </td>
                         <td className="px-6 py-5 text-center">
                           <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase
