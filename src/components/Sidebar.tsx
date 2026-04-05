@@ -18,13 +18,16 @@ import {
   Rocket,
   Heart,
   ShoppingCart,
+  Package,
+  UserPlus,
+  LayoutDashboard,
+  Settings
 } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [userRole, setUserRole] = useState<string | null>(null);
-
 
   useEffect(() => {
     const role = localStorage.getItem('userRole');
@@ -33,10 +36,10 @@ export default function Sidebar() {
 
   const navItems = [
     {
-      href: "/dashboard/applications",
-      label: "Applications",
-      icon: Users,
-      adminOnly: true,
+      href: "/dashboard",
+      label: "Dashboard",
+      icon: LayoutDashboard,
+      adminOnly: false,
     },
     {
       href: "/dashboard/teams",
@@ -45,38 +48,15 @@ export default function Sidebar() {
       adminOnly: false,
     },
     {
-      href: "/dashboard/events",
-      label: "Announcements",
-      icon: Calendar,
-      adminOnly: false,
-    },
-    {
-      href: "/dashboard/chat",
-      label: "Live Chat",
-      icon: MessageSquare,
-      adminOnly: false,
-    },
-    {
-      href: "/dashboard/projects",
-      label: "Project Showcases",
-      icon: Rocket,
+      href: "/dashboard/applications",
+      label: "Applications",
+      icon: Shield,
       adminOnly: true,
-    },
-    {
-      href: "/dashboard/posts",
-      label: "Post Management",
-      icon: Activity,
-      adminOnly: true,
+      badge: "New"
     },
     {
       href: "/dashboard/components",
       label: "Buy Components",
-      icon: Cpu,
-      adminOnly: false,
-    },
-    {
-      href: "/dashboard/orders",
-      label: "Orders",
       icon: ShoppingCart,
       adminOnly: false,
     },
@@ -86,11 +66,26 @@ export default function Sidebar() {
       icon: Heart,
       adminOnly: false,
     },
+    {
+      href: "/dashboard/orders",
+      label: "Orders",
+      icon: Package,
+      adminOnly: false,
+      badge: "Alert"
+    },
+    {
+      href: "/dashboard/chat",
+      label: "Live Chat",
+      icon: MessageSquare,
+      adminOnly: false,
+    },
+    {
+      href: "/join",
+      label: "Join Lab",
+      icon: UserPlus,
+      adminOnly: false,
+    },
   ];
-
-  // Adjust icons based on what was seen in the pages
-  // In Teams it was Network, in Payments it was IndianRupee, etc.
-  // The label and icons in navItems match the dashboard pages' sidebar.
 
   const filteredNavItems = navItems.filter(item => !item.adminOnly || userRole === 'admin');
 
@@ -165,7 +160,7 @@ export default function Sidebar() {
           w-72 border-r border-white/10 p-7 pt-24 md:pt-10
           flex flex-col overflow-y-auto
           transition-all duration-300 ease-out will-change-transform gpu-accelerate
-          backdrop-blur-xl bg-[#080d1a]/90 shadow-[10px_0_50px_rgba(0,0,0,0.5)]
+          backdrop-blur-md bg-[#080d1a]/95 shadow-[10px_0_50px_rgba(0,0,0,0.5)]
           ${sidebarExpanded ? 'translate-x-0' : '-translate-x-full'}
         `}
         onMouseEnter={() => setIsHovered(true)}
@@ -177,21 +172,11 @@ export default function Sidebar() {
             <img src="/icons/v1-192.png" alt="AlphaX" className="w-9 h-9 rounded-xl shadow-[0_0_20px_rgba(99,102,241,0.4)] border border-white/5" />
             <div className="flex flex-col">
               <span className="font-black tracking-[0.2em] text-white uppercase text-[10px]">AlphaX</span>
-              <span className="font-bold text-indigo-400 uppercase text-[9px] opacity-70">
+              <span className="font-bold text-indigo-400 uppercase text-[9px] opacity-70 italic tracking-tighter">
                 {userRole || 'Loading...'}
               </span>
             </div>
           </div>
-          <button 
-            onClick={() => {
-              setIsOpen(false);
-              setIsHovered(false);
-            }}
-            className="p-2 rounded-xl bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all border border-white/5"
-            title="Close Sidebar"
-          >
-            <X className="w-4 h-4" />
-          </button>
         </div>
 
         <nav className="space-y-1.5 flex-1">
@@ -217,6 +202,11 @@ export default function Sidebar() {
                 )}
                 <Icon className={`w-5 h-5 transition-all duration-300 group-hover:scale-115 group-hover:rotate-6 ${isActive ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.6)]' : 'group-hover:text-indigo-300'}`} />
                 <span className="relative z-10 text-sm tracking-wide">{item.label}</span>
+                {item.badge && (
+                   <span className="ml-auto text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-indigo-500 text-black shadow-lg">
+                      {item.badge}
+                   </span>
+                )}
                 {!isActive && (
                   <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/0 via-indigo-500/5 to-indigo-500/0 opacity-0 group-hover:opacity-100 -translate-x-full group-hover:translate-x-full transition-all duration-1000" />
                 )}

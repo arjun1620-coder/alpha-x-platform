@@ -5,34 +5,17 @@ import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ChevronRight, Loader2 } from "lucide-react";
 import { submitApplication } from "@/app/actions/application";
 
-const PREDEFINED_SKILLS = [
-  "Arduino", "ESP32", "Raspberry Pi", "C/C++", "Python", 
-  "CAD/SolidWorks", "ROS", "3D Printing", "PCB Design", 
-  "Machine Learning", "React/Next.js", "UI/UX Design"
-];
-
 export default function JoinPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [applicantId, setApplicantId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
-
-  const toggleSkill = (skill: string) => {
-    setSelectedSkills(prev => 
-      prev.includes(skill) 
-        ? prev.filter(s => s !== skill)
-        : [...prev, skill]
-    );
-  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsSubmitting(true);
     
     const formData = new FormData(e.currentTarget);
-    // Append selected skills manually since they are custom UI elements
-    selectedSkills.forEach(skill => formData.append('skills', skill));
     
     try {
       setErrorMsg(null);
@@ -65,12 +48,12 @@ export default function JoinPage() {
           Back to Home
         </Link>
         
-        <div className="mb-12">
-          <h1 className="text-5xl md:text-6xl font-black tracking-tight mb-6">
+        <div className="mb-12 text-center md:text-left">
+          <h1 className="text-5xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic">
             JOIN <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-slate-500">AlphaX Robotics</span>
           </h1>
-          <p className="text-xl text-gray-400 font-light max-w-2xl leading-relaxed">
-            We are searching for visionary engineers, programmers, and designers to help us architect the future. Submit your application to join our core development team.
+          <p className="text-xl text-gray-400 font-light max-w-2xl leading-relaxed italic">
+            We are searching for visionary engineers to help us architect the future. Submit your profile to join our development ecosystem.
           </p>
         </div>
 
@@ -79,20 +62,17 @@ export default function JoinPage() {
             <div className="w-24 h-24 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-indigo-500/30">
               <CheckCircle2 className="w-12 h-12 text-indigo-400" />
             </div>
-            <h2 className="text-4xl font-bold mb-4 tracking-tight">Application Secured</h2>
-            <p className="text-gray-400 max-w-md mx-auto mb-6 text-lg leading-relaxed">
-              Your application has been submitted successfully. We will review your credentials and contact you shortly.
+            <h2 className="text-4xl font-bold mb-4 tracking-tight uppercase italic">Application Secured</h2>
+            <p className="text-gray-400 max-w-md mx-auto mb-6 text-lg leading-relaxed italic">
+              Your profile has been submitted. We will review your institutional credentials and contact you shortly.
             </p>
             
             {applicantId && (
               <div className="bg-[#030712] border border-indigo-500/50 rounded-xl p-6 mb-10 mx-auto max-w-sm text-center">
-                <p className="text-xs text-indigo-400 font-bold tracking-widest uppercase mb-2">Application Tracking ID</p>
+                <p className="text-xs text-indigo-400 font-bold tracking-widest uppercase mb-2">AlphaX Secure ID</p>
                 <div className="font-mono text-sm text-white bg-white/5 py-3 px-4 rounded-lg border border-white/10 break-all">
                   {applicantId}
                 </div>
-                <p className="text-xs text-gray-500 mt-3 flex items-center gap-2 justify-center italic">
-                  Note: On approval, you can use your chosen password and email to login.
-                </p>
               </div>
             )}
 
@@ -101,42 +81,44 @@ export default function JoinPage() {
             </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="bg-[#080d1a]/80 border border-white/10 rounded-[2rem] p-8 md:p-12 backdrop-blur-xl relative shadow-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <form onSubmit={handleSubmit} className="bg-[#080d1a]/80 border border-white/10 rounded-[2.5rem] p-8 md:p-12 backdrop-blur-xl relative shadow-2xl overflow-hidden group">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 blur-[100px] pointer-events-none group-hover:bg-indigo-500/10 transition-all duration-700" />
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
               
               {/* Personal Info */}
               <div className="space-y-6 md:col-span-2">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-indigo-400 tracking-wide uppercase">01. Applicant Profile</h3>
+                <h3 className="text-xl font-black border-b border-white/10 pb-3 text-indigo-400 tracking-widest uppercase italic">01. Identity & Credentials</h3>
               </div>
 
               <div className="space-y-3 md:col-span-1">
-                <label htmlFor="full_name" className="text-sm font-semibold text-gray-300">Full Name *</label>
+                <label htmlFor="full_name" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">Full Identity *</label>
                 <input 
                   required 
                   type="text" 
                   id="full_name" 
                   name="full_name" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
-                  placeholder="Ada Lovelace"
+                  className="w-full bg-[#030712] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all italic font-bold"
+                  placeholder="ADA LOVELACE"
                 />
               </div>
 
               <div className="space-y-3 md:col-span-1">
-                <label htmlFor="email" className="text-sm font-semibold text-gray-300">Email *</label>
+                <label htmlFor="email" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">Secure Email *</label>
                 <input 
                   required 
                   type="email" 
                   id="email" 
                   name="email" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
-                  placeholder="ada@mit.edu"
+                  className="w-full bg-[#030712] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all italic font-bold"
+                  placeholder="ADA@ALPHAX.LABS"
                 />
               </div>
 
               <div className="space-y-3 md:col-span-1">
-                <label htmlFor="mobile_number" className="text-sm font-semibold text-gray-300">Mobile Number *</label>
+                <label htmlFor="mobile_number" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">Comm Link *</label>
                 <div className="flex">
-                  <span className="inline-flex items-center px-4 bg-white/5 border border-r-0 border-white/10 rounded-l-xl text-gray-400 text-sm font-bold">+91</span>
+                  <span className="inline-flex items-center px-4 bg-white/5 border border-r-0 border-white/10 rounded-l-2xl text-gray-400 text-[10px] font-black">+91</span>
                   <input 
                     required 
                     type="tel" 
@@ -144,59 +126,63 @@ export default function JoinPage() {
                     name="mobile_number" 
                     pattern="[0-9]{10}"
                     maxLength={10}
-                    className="w-full bg-[#030712] border border-white/10 rounded-r-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
+                    className="w-full bg-[#030712] border border-white/10 rounded-r-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all italic font-bold"
                     placeholder="98765 43210"
                   />
                 </div>
               </div>
 
               <div className="space-y-3 md:col-span-1">
-                <label htmlFor="password" className="text-sm font-semibold text-gray-300">Create Secure Password *</label>
+                <label htmlFor="password" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">Access Key *</label>
                 <input 
                   required 
                   type="password" 
                   id="password" 
                   name="password" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all font-mono"
                   placeholder="••••••••"
                 />
               </div>
 
+              <div className="space-y-6 md:col-span-2 pt-8">
+                <h3 className="text-xl font-black border-b border-white/10 pb-3 text-indigo-400 tracking-widest uppercase italic">02. Institutional Data</h3>
+              </div>
+
               <div className="space-y-3">
-                <label htmlFor="college" className="text-sm font-semibold text-gray-300">University / College *</label>
+                <label htmlFor="college" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">University / College Name *</label>
                 <input 
                   required 
                   type="text" 
                   id="college" 
                   name="college" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
+                  className="w-full bg-[#030712] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all italic font-bold"
                   placeholder="MIT"
                 />
               </div>
 
               <div className="space-y-3">
-                <label htmlFor="department" className="text-sm font-semibold text-gray-300">Major / Department *</label>
+                <label htmlFor="department" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">Major / Specialization *</label>
                 <input 
                   required 
                   type="text" 
                   id="department" 
                   name="department" 
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all shadow-inner"
-                  placeholder="Mechatronics Engineering"
+                  className="w-full bg-[#030712] border border-white/10 rounded-2xl px-5 py-4 text-white placeholder:text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all italic font-bold"
+                  placeholder="MECHATRONICS"
                 />
               </div>
 
-              <div className="space-y-3">
-                <label htmlFor="year_of_study" className="text-sm font-semibold text-gray-300">Year of Study *</label>
+              <div className="space-y-3 md:col-span-2">
+                <label htmlFor="year_of_study" className="text-[10px] font-black tracking-widest uppercase text-gray-500 ml-1">Current Academic Year *</label>
                 <div className="relative">
                   <select 
                     required 
                     defaultValue=""
                     id="year_of_study" 
                     name="year_of_study" 
-                    className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none cursor-pointer shadow-inner"
+                    className="w-full bg-[#030712] border border-white/10 rounded-2xl px-5 py-4 text-white focus:outline-none focus:ring-1 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all appearance-none cursor-pointer italic font-bold"
                   >
-                    <option value="" disabled>Select your current year...</option>
+                    <option value="" disabled>SELECT PHASE...</option>
                     <option value="1">1st Year (Freshman)</option>
                     <option value="2">2nd Year (Sophomore)</option>
                     <option value="3">3rd Year (Junior)</option>
@@ -204,76 +190,31 @@ export default function JoinPage() {
                     <option value="grad">Graduate / Masters</option>
                     <option value="alumni">Alumni / Professional</option>
                   </select>
-                  <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-gray-400">
+                  <div className="absolute inset-y-0 right-5 flex items-center pointer-events-none text-indigo-500">
                     <ChevronRight className="w-5 h-5 rotate-90" />
                   </div>
                 </div>
               </div>
 
-              {/* Achievements */}
-              <div className="space-y-6 md:col-span-2 pt-8">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-indigo-400 tracking-wide uppercase">02. Experience & Achievements</h3>
-              </div>
-
-              <div className="space-y-3 md:col-span-2">
-                <label htmlFor="achievements" className="text-sm font-semibold text-gray-300">Highlight your best engineering achievements or projects *</label>
-                <textarea 
-                  required 
-                  id="achievements" 
-                  name="achievements" 
-                  rows={5}
-                  className="w-full bg-[#030712] border border-white/10 rounded-xl px-5 py-4 text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all resize-y shadow-inner"
-                  placeholder="e.g. Built a custom 6-axis robotic arm, won 1st place in National Hackathon, designed a telemetry board for a rocket..."
-                ></textarea>
-              </div>
-
-              {/* Tech Stack */}
-              <div className="space-y-6 md:col-span-2 pt-8">
-                <h3 className="text-xl font-bold border-b border-white/10 pb-3 text-indigo-400 tracking-wide uppercase">03. Technical Skills</h3>
-                <p className="text-sm text-gray-400 mb-5 leading-relaxed">Select the tools and skills you bring to the table. We evaluate these closely during our review process.</p>
-                <div className="flex flex-wrap gap-3">
-                  {PREDEFINED_SKILLS.map((skill) => {
-                    const isSelected = selectedSkills.includes(skill);
-                    return (
-                      <button
-                        type="button"
-                        key={skill}
-                        onClick={() => toggleSkill(skill)}
-                        className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${
-                          isSelected 
-                            ? 'bg-indigo-500/20 border-2 border-indigo-400 text-indigo-300 shadow-[0_0_15px_rgba(99,102,241,0.3)] scale-105' 
-                            : 'bg-[#030712] border-2 border-white/10 text-gray-400 hover:border-white/30 hover:text-white'
-                        }`}
-                      >
-                        {skill}
-                      </button>
-                    )
-                  })}
-                </div>
-                {selectedSkills.length === 0 && (
-                  <p className="text-xs text-red-400 mt-2">* Please select at least one technical skill.</p>
-                )}
-              </div>
-
               {/* Submit */}
               <div className="md:col-span-2 pt-10 flex flex-col sm:flex-row items-center justify-between border-t border-white/10 mt-4 gap-6">
-                <p className="text-xs text-gray-500 max-w-sm">
-                  By submitting, you agree to AlphaX Robotics's confidentiality guidelines regarding internal hardware and codebases.
+                <p className="text-[9px] text-gray-500 max-w-xs font-bold uppercase tracking-widest leading-relaxed italic">
+                  By committing your profile, you acknowledge the <span className="text-white">Confidential AlphaX Protocol</span> and platform guidelines.
                 </p>
                 <button 
                   type="submit" 
-                  disabled={isSubmitting || selectedSkills.length === 0}
-                  className="w-full sm:w-auto group flex items-center justify-center gap-3 px-10 py-5 bg-indigo-500 text-black rounded-xl font-black text-lg hover:bg-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-[0_0_25px_rgba(99,102,241,0.5)] active:scale-95"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto group flex items-center justify-center gap-4 px-12 py-5 bg-indigo-500 text-black rounded-2xl font-black text-sm uppercase tracking-[0.2em] italic hover:bg-indigo-400 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_40px_rgba(99,102,241,0.2)] active:scale-95"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                      Submitting...
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      SECURE SUBMITTING...
                     </>
                   ) : (
                     <>
-                      SUBMIT APPLICATION
-                      <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />
+                      TRANSMIT APPLICATION
+                      <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                     </>
                   )}
                 </button>
@@ -281,11 +222,11 @@ export default function JoinPage() {
               
               {/* Error Message Display */}
               {errorMsg && (
-                <div className="md:col-span-2 p-5 mt-4 bg-red-500/10 border border-red-500/30 rounded-xl text-red-400 text-sm font-bold shadow-[0_0_15px_rgba(239,68,68,0.2)]">
-                  ⚠️ CONNECTION FAILED: {errorMsg}
+                <div className="md:col-span-2 p-5 mt-4 bg-red-500/10 border border-red-500/30 rounded-2xl text-red-400 text-[10px] font-black uppercase tracking-widest flex items-center gap-3">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-ping" />
+                  CRITICAL FAILURE: {errorMsg}
                 </div>
               )}
-
 
             </div>
           </form>

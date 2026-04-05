@@ -27,12 +27,33 @@ export default function ContributePage() {
 
   const fetchContributions = async () => {
     setIsLoading(true);
-    const { data } = await supabase
+    const role = localStorage.getItem('userRole');
+    const memberData = localStorage.getItem('memberData');
+    const memberId = memberData ? JSON.parse(memberData).id : null;
+
+    let query = supabase
       .from('contributions')
-      .select('*, member:applications(full_name, email)')
-      .order('created_at', { ascending: false });
+      .select('*, member:applications(full_name, email)');
+
+    if (role !== 'admin') {
+      // For members, only show verified ones OR their own
+      query = query.or(`is_verified.eq.true,member_id.eq.${memberId}`);
+    }
+
+    const { data } = await query.order('created_at', { ascending: false });
     if (data) setContributions(data);
     setIsLoading(false);
+  };
+
+  const handleVerify = async (id: string) => {
+    const { error } = await supabase.from('contributions').update({ is_verified: true }).eq('id', id);
+    if (!error) fetchContributions();
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("Permanent Deletion: Are you sure you want to remove this record from the AlphaX ledger?")) return;
+    const { error } = await supabase.from('contributions').delete().eq('id', id);
+    if (!error) fetchContributions();
   };
 
   const handleContribute = async (e: React.FormEvent) => {
@@ -73,7 +94,7 @@ export default function ContributePage() {
     }, 2500);
   };
 
-  const totalRaised = contributions.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
+  const totalRaised = contributions.filter(c => c.is_verified).reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
 
   return (
     <div className="min-h-screen bg-[#030712] text-white selection:bg-rose-500/30 relative">
@@ -204,27 +225,54 @@ export default function ContributePage() {
                       {contributions.map((c, idx) => (
                         <div 
                           key={c.id} 
-                          className="flex items-center justify-between p-5 rounded-3xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.05] transition-all group"
+                          className={`flex items-center justify-between p-5 rounded-3xl bg-white/[0.03] border transition-all group ${c.is_verified ? 'border-green-500/10' : 'border-rose-500/10'}`}
                           style={{ animation: `slide-in-right 0.5s ease-out ${idx * 0.1}s both` }}
                         >
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-rose-500/10 rounded-2xl flex items-center justify-center border border-rose-500/20">
-                              <User className="w-5 h-5 text-rose-400" />
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center border ${c.is_verified ? 'bg-green-500/10 border-green-500/20' : 'bg-rose-500/10 border-rose-500/20'}`}>
+                              {c.is_verified ? <ShieldCheck className="w-5 h-5 text-green-400" /> : <Activity className="w-5 h-5 text-rose-400" />}
                             </div>
                             <div>
-                              <p className="text-sm font-black text-white italic uppercase tracking-tight">
-                                {c.member?.full_name || "Supporter"}
-                              </p>
+                              <div className="flex items-center gap-2">
+                                <p className="text-sm font-black text-white italic uppercase tracking-tight">
+                                  {c.member?.full_name || "Supporter"}
+                                </p>
+                                {c.is_verified && <span className="text-[8px] px-1.5 py-0.5 bg-green-500 text-black font-black uppercase rounded">Verified</span>}
+                              </div>
                               <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest line-clamp-1">
                                 {c.note || "General Contribution"}
                               </p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="text-lg font-black italic text-rose-400 tracking-tighter">₹{parseFloat(c.amount).toLocaleString()}</p>
-                            <p className="text-[9px] text-gray-700 font-bold uppercase">
-                              {new Date(c.created_at).toLocaleDateString()}
-                            </p>
+                          
+                          <div className="flex items-center gap-6">
+                             <div className="text-right">
+                               <p className={`text-lg font-black italic tracking-tighter ${c.is_verified ? 'text-green-400' : 'text-rose-400'}`}>₹{parseFloat(c.amount).toLocaleString()}</p>
+                               <p className="text-[9px] text-gray-700 font-bold uppercase">
+                                 {new Date(c.created_at).toLocaleDateString()}
+                               </p>
+                             </div>
+
+                             {userRole === 'admin' && (
+                               <div className="flex gap-2">
+                                 {!c.is_verified && (
+                                   <button 
+                                     onClick={() => handleVerify(c.id)}
+                                     className="p-3 bg-green-500/10 text-green-400 border border-green-500/20 rounded-xl hover:bg-green-500 hover:text-black transition-all"
+                                     title="Verify Legitimate"
+                                   >
+                                     <CheckCircle2 className="w-4 h-4" />
+                                   </button>
+                                 )}
+                                 <button 
+                                   onClick={() => handleDelete(c.id)}
+                                   className="p-3 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-xl hover:bg-rose-500 hover:text-black transition-all"
+                                   title="Delete Record"
+                                 >
+                                   <X className="w-4 h-4" />
+                                 </button>
+                               </div>
+                             )}
                           </div>
                         </div>
                       ))}

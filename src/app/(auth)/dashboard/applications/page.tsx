@@ -7,23 +7,43 @@ import Sidebar from "@/components/Sidebar";
 import Confetti from "@/components/Confetti";
 import Toast, { useToast } from "@/components/Toast";
 
-// Simple ReadMore Component to keep table clean
-const ReadMore = ({ text, maxLength = 30 }: { text: string, maxLength?: number }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const shouldTruncate = text.length > maxLength;
-  
-  if (!shouldTruncate) return <span className="text-gray-400 font-medium italic">{text}</span>;
+// Truncated for brevity as we no longer show skills/exp in table
+const EditableInstitution = ({ id, current, fetchApplications }: { id: string, current: string, fetchApplications: () => void }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [value, setValue] = useState(current);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleBlur = async () => {
+    if (value === current) {
+      setIsEditing(false);
+      return;
+    }
+    setIsSaving(true);
+    const { error } = await supabase.from('applications').update({ college: value }).eq('id', id);
+    if (!error) fetchApplications();
+    setIsEditing(false);
+    setIsSaving(false);
+  };
+
+  if (isEditing) {
+    return (
+      <input 
+        autoFocus
+        value={value}
+        onChange={e => setValue(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={e => e.key === 'Enter' && handleBlur()}
+        className="bg-indigo-500/10 border border-indigo-500/30 rounded px-2 py-1 text-xs text-white outline-none w-full italic"
+      />
+    );
+  }
 
   return (
-    <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
-      <div className={`text-gray-400 font-medium italic transition-all duration-300 ${!isExpanded ? 'truncate max-w-[120px]' : 'whitespace-normal text-indigo-300'}`}>
-        {text}
-      </div>
-      <button 
-        className="text-[9px] font-black text-indigo-500 hover:text-white uppercase tracking-tighter shrink-0 border border-indigo-500/30 px-1.5 py-0.5 rounded bg-indigo-500/5 group-hover:bg-indigo-500 group-hover:text-black transition-all"
-      >
-        {isExpanded ? "Less" : "...More"}
-      </button>
+    <div 
+      onClick={() => setIsEditing(true)}
+      className="text-gray-300 font-medium cursor-pointer hover:text-indigo-400 hover:bg-white/5 px-2 py-1 rounded transition-all italic border border-transparent hover:border-white/5"
+    >
+      {current || "N/A"}
     </div>
   );
 };
@@ -70,7 +90,7 @@ export default function ApplicationsDashboard() {
   const fetchApplications = async () => {
     const { data, error } = await supabase
       .from('applications')
-      .select('*')
+      .select('*, team:teams(name)')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -282,9 +302,8 @@ export default function ApplicationsDashboard() {
                   <thead className="bg-white/5 text-gray-400 border-b border-white/10 text-xs uppercase tracking-wider">
                     <tr>
                       <th className="px-6 py-5 font-semibold">Candidate</th>
-                      <th className="px-6 py-5 font-semibold">Institution</th>
-                      <th className="px-6 py-5 font-semibold">Achievements</th>
-                      <th className="px-6 py-5 font-semibold">Skills</th>
+                      <th className="px-6 py-5 font-semibold">Institution (Edit)</th>
+                      <th className="px-6 py-5 font-semibold">Operational Team</th>
                       <th className="px-6 py-5 font-semibold text-center">Status</th>
                       <th className="px-6 py-5 font-semibold text-right">Actions</th>
                     </tr>
@@ -306,14 +325,13 @@ export default function ApplicationsDashboard() {
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <ReadMore text={app.college || "N/A"} maxLength={20} />
-                          <div className="text-gray-600 text-[10px] mt-1 truncate max-w-[150px] uppercase font-bold tracking-tighter">{app.department} • {app.year_of_study}</div>
+                          <EditableInstitution id={app.id} current={app.college} fetchApplications={fetchApplications} />
+                          <div className="text-gray-600 text-[10px] mt-1 px-2 uppercase font-bold tracking-tighter">{app.department} • {app.year_of_study}</div>
                         </td>
                         <td className="px-6 py-5">
-                          <ReadMore text={app.achievements || "No achievements listed."} maxLength={50} />
-                        </td>
-                        <td className="px-6 py-5">
-                          <ReadMore text={app.skills?.join(", ") || "No skills listed."} maxLength={40} />
+                          <div className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-[0.2em] w-fit italic ${app.team?.name ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' : 'text-gray-700 bg-white/5 border border-white/10 opacity-40'}`}>
+                             {app.team?.name || "UNASSIGNED"}
+                          </div>
                         </td>
                         <td className="px-6 py-5 text-center">
                           <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider uppercase

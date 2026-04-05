@@ -13,8 +13,6 @@ export async function submitApplication(formData: FormData) {
     college: formData.get('college') as string,
     department: formData.get('department') as string,
     year_of_study: formData.get('year_of_study') as string,
-    achievements: formData.get('achievements') as string,
-    skills: formData.getAll('skills') as string[],
     status: 'pending'
   };
 
