@@ -8,22 +8,21 @@ import Confetti from "@/components/Confetti";
 import Toast, { useToast } from "@/components/Toast";
 
 // Simple ReadMore Component to keep table clean
-const ReadMore = ({ text, maxLength = 50 }: { text: string, maxLength?: number }) => {
+const ReadMore = ({ text, maxLength = 30 }: { text: string, maxLength?: number }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldTruncate = text.length > maxLength;
   
-  if (!shouldTruncate) return <span className="text-gray-300">{text}</span>;
+  if (!shouldTruncate) return <span className="text-gray-400 font-medium italic">{text}</span>;
 
   return (
-    <div className="flex flex-col gap-1">
-      <div className={`text-gray-300 ${!isExpanded ? 'truncate max-w-[200px]' : 'whitespace-normal'}`}>
+    <div className="flex items-center gap-2 group cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+      <div className={`text-gray-400 font-medium italic transition-all duration-300 ${!isExpanded ? 'truncate max-w-[120px]' : 'whitespace-normal text-indigo-300'}`}>
         {text}
       </div>
       <button 
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 uppercase tracking-widest text-left w-fit"
+        className="text-[9px] font-black text-indigo-500 hover:text-white uppercase tracking-tighter shrink-0 border border-indigo-500/30 px-1.5 py-0.5 rounded bg-indigo-500/5 group-hover:bg-indigo-500 group-hover:text-black transition-all"
       >
-        {isExpanded ? "Show Less" : "Read More"}
+        {isExpanded ? "Less" : "...More"}
       </button>
     </div>
   );
@@ -307,8 +306,8 @@ export default function ApplicationsDashboard() {
                           </div>
                         </td>
                         <td className="px-6 py-5">
-                          <div className="text-gray-300 font-medium truncate max-w-[200px]">{app.college}</div>
-                          <div className="text-gray-500 text-xs mt-1 truncate max-w-[200px]">{app.department} • {app.year_of_study}</div>
+                          <ReadMore text={app.college || "N/A"} maxLength={20} />
+                          <div className="text-gray-600 text-[10px] mt-1 truncate max-w-[150px] uppercase font-bold tracking-tighter">{app.department} • {app.year_of_study}</div>
                         </td>
                         <td className="px-6 py-5">
                           <ReadMore text={app.achievements || "No achievements listed."} maxLength={50} />

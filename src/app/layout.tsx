@@ -88,8 +88,6 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Razorpay Checkout Script */}
-        <script src="https://checkout.razorpay.com/v1/checkout.js" async />
         {/* Structured Data (JSON-LD) for Google Search */}
         <script
           type="application/ld+json"

@@ -111,25 +111,25 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Edge Hover Trigger Zone - Invisible but active */}
+      {/* Edge Hover Trigger Zone - Expanded for easier access */}
       <div 
-        className="fixed inset-y-0 left-0 w-4 z-[54] transition-all"
+        className={`fixed inset-y-0 left-0 w-12 z-[54] transition-all cursor-e-resize ${isHovered ? 'bg-indigo-500/5' : ''}`}
         onMouseEnter={() => setIsHovered(true)}
       />
 
       {/* Floating Toggle Button (visible when sidebar is closed) */}
       <div className={`
-        fixed top-1/2 -translate-y-1/2 left-0 z-[60] transition-all duration-500
-        ${sidebarExpanded ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100 delay-300'}
+        fixed top-1/2 -translate-y-1/2 left-0 z-[60] transition-all duration-300
+        ${sidebarExpanded ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100 delay-100'}
       `}>
         <button 
           onClick={toggleSidebar}
           onMouseEnter={() => setIsHovered(true)}
-          className="group flex flex-col items-center justify-center gap-1 w-12 h-24 bg-[#080d1a]/80 backdrop-blur-xl border border-white/10 rounded-r-2xl text-indigo-400 hover:text-white hover:w-14 transition-all shadow-[10px_0_30px_rgba(0,0,0,0.5)] border-l-0"
-          aria-label="Open Sidebar"
+          className="group flex flex-col items-center justify-center gap-1 w-14 h-32 bg-[#080d1a]/95 backdrop-blur-md border border-white/10 rounded-r-[2rem] text-indigo-400 hover:text-indigo-300 transition-all shadow-[15px_0_40px_rgba(0,0,0,0.6)] border-l-0"
+          aria-label="Open AlphaX Sidebar"
         >
-          <div className="w-1 h-8 bg-indigo-500/40 group-hover:bg-indigo-400 rounded-full transition-colors" />
-          <Menu className="w-5 h-5 -rotate-90 group-hover:scale-110 transition-transform" />
+          <div className="w-1.5 h-12 bg-indigo-500/20 group-hover:bg-indigo-500 rounded-full transition-all duration-300" />
+          <Menu className="w-6 h-6 -rotate-90 group-hover:scale-125 transition-transform" />
         </button>
       </div>
 
