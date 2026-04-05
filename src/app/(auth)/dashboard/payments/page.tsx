@@ -37,40 +37,70 @@ export default function ContributePage() {
 
   const handleContribute = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount) return;
+    if (!amount || parseFloat(amount) <= 0) return;
     
-    // 1. Start processing animation (Simulating gateway redirect)
     setIsProcessing(true);
     
-    // Simulate network delay to gateway
-    setTimeout(async () => {
-      try {
-        const memberData = localStorage.getItem('memberData');
-        const memberId = memberData ? JSON.parse(memberData).id : null;
+    try {
+      // 1. Create Razorpay Order via our API
+      const orderRes = await fetch("/api/razorpay/order", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: parseFloat(amount) }),
+      });
+      const orderData = await orderRes.json();
+      
+      if (orderData.error) throw new Error(orderData.error);
 
-        const { error } = await supabase.from('contributions').insert({
-          member_id: memberId,
-          amount: parseFloat(amount),
-          note: note,
-          transaction_id: `AX-TXN-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
-          status: 'completed'
-        });
+      // 2. Open Razorpay Checkout
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_YOUR_KEY",
+        amount: orderData.amount,
+        currency: "INR",
+        name: "AlphaX Robotics Lab",
+        description: "Lab Research Contribution",
+        order_id: orderData.id,
+        handler: async function (response: any) {
+          // Success: Save to Supabase
+          const memberData = localStorage.getItem('memberData');
+          const memberId = memberData ? JSON.parse(memberData).id : null;
 
-        if (error) throw error;
+          const { error } = await supabase.from('contributions').insert({
+            member_id: memberId,
+            amount: parseFloat(amount),
+            note: note,
+            transaction_id: response.razorpay_payment_id,
+            status: 'completed'
+          });
 
-        // 2. Clear state and show success
-        setAmount("");
-        setNote("");
-        setIsProcessing(false);
-        setShowSuccess(true);
-        fetchContributions();
+          if (!error) {
+             setAmount("");
+             setNote("");
+             setShowSuccess(true);
+             fetchContributions();
+          }
+          setIsProcessing(false);
+        },
+        prefill: {
+          name: localStorage.getItem('memberData') ? JSON.parse(localStorage.getItem('memberData')!).full_name : "",
+          email: localStorage.getItem('memberData') ? JSON.parse(localStorage.getItem('memberData')!).email : ""
+        },
+        theme: { color: "#f43f5e" }, // Rose color for contributions
+        modal: {
+           ondismiss: () => {
+             setIsProcessing(false);
+           }
+        }
+      };
 
-      } catch (err) {
-        console.error("Contribution failed:", err);
-        alert("Payment gateway error. Please try again.");
-        setIsProcessing(false);
-      }
-    }, 2500);
+      const rzp = new (window as any).Razorpay(options);
+      rzp.open();
+
+    } catch (err: any) {
+      console.error("Contribution failed:", err);
+      alert("Payment failed: " + (err.message || "Unknown error"));
+      setIsProcessing(false);
+    }
   };
 
   const totalRaised = contributions.reduce((sum, c) => sum + (parseFloat(c.amount) || 0), 0);
@@ -185,7 +215,7 @@ export default function ContributePage() {
                       <Activity className="w-4 h-4 text-rose-500" /> Recent Contributions
                     </h3>
                     {userRole === 'admin' && (
-                      <LayoutDashboard className="w-4 h-4 text-gray-700" title="Admin Overview" />
+                      <LayoutDashboard className="w-4 h-4 text-gray-700" />
                     )}
                   </div>
 
